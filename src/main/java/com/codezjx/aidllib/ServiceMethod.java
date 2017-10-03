@@ -44,14 +44,15 @@ public class ServiceMethod {
             handlers[p].apply(bundle, args[p]);
         }
 
-        Response response = null;
+        Object result = null;
         try {
-            response = transfer.execute(new Request("", mMethodName, bundle));
+            Response response = transfer.execute(new Request("", mMethodName, args));
+            result = response.getResult();
             Log.d(TAG, "Response from server, code:" + response.getStatusCode() + " msg:" + response.getStatusMessage());
         } catch (RemoteException e) {
             e.printStackTrace();
         }
-        return response;
+        return result;
     }
 
     public static final class Builder {
@@ -111,7 +112,7 @@ public class ServiceMethod {
                     return new ParameterHandler.ParamNameHandler<>(paramName, rawParameterType);
                 }
             }
-            throw parameterError(p, "No Retrofit annotation found.");
+            throw parameterError(p, "No support annotation found.");
         }
 
         private RuntimeException methodError(String message, Object... args) {

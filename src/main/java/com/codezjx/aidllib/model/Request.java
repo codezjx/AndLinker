@@ -1,6 +1,5 @@
 package com.codezjx.aidllib.model;
 
-import android.os.Bundle;
 import android.os.Parcel;
 import android.os.Parcelable;
 
@@ -11,12 +10,12 @@ public class Request implements Parcelable {
 
     private String mTargetClass;
     private String mMethodName;
-    private Bundle mParams;
+    private Object[] mArgs;
 
-    public Request(String targetClass, String methodName, Bundle params) {
+    public Request(String targetClass, String methodName, Object[] args) {
         mTargetClass = targetClass;
         mMethodName = methodName;
-        mParams = params;
+        mArgs = args;
     }
     
     @Override
@@ -28,13 +27,13 @@ public class Request implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(this.mTargetClass);
         dest.writeString(this.mMethodName);
-        dest.writeBundle(this.mParams);
+        dest.writeArray(mArgs);
     }
 
     protected Request(Parcel in) {
-        this.mTargetClass = in.readString();
-        this.mMethodName = in.readString();
-        this.mParams = in.readBundle();
+        mTargetClass = in.readString();
+        mMethodName = in.readString();
+        mArgs = in.readArray(getClass().getClassLoader());
     }
 
     public static final Creator<Request> CREATOR = new Creator<Request>() {
@@ -57,7 +56,7 @@ public class Request implements Parcelable {
         return mMethodName;
     }
 
-    public Bundle getParams() {
-        return mParams;
+    public Object[] getArgs() {
+        return mArgs;
     }
 }
