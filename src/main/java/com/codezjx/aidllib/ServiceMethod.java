@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.codezjx.aidllib.annotation.ClassName;
 import com.codezjx.aidllib.annotation.MethodName;
 import com.codezjx.aidllib.annotation.ParamName;
 import com.codezjx.aidllib.model.Request;
@@ -21,10 +22,12 @@ public class ServiceMethod {
     
     private static final String TAG = "ServiceMethod";
 
+    private String mClassName;
     private String mMethodName;
     private ParameterHandler<?>[] mParameterHandlers;
 
     public ServiceMethod(Builder builder) {
+        mClassName = builder.mClassName;
         mMethodName = builder.mMethodName;
         mParameterHandlers = builder.mParameterHandlers;
     }
@@ -46,7 +49,7 @@ public class ServiceMethod {
 
         Object result = null;
         try {
-            Response response = transfer.execute(new Request("", mMethodName, args));
+            Response response = transfer.execute(new Request(mClassName, mMethodName, args));
             result = response.getResult();
             Log.d(TAG, "Response from server, code:" + response.getStatusCode() + " msg:" + response.getStatusMessage());
         } catch (RemoteException e) {
@@ -62,7 +65,8 @@ public class ServiceMethod {
         private Annotation[][] mParameterAnnotationsArray;
         private Type[] mParameterTypes;
 
-        private String mMethodName;
+        private String mClassName = "";
+        private String mMethodName = "";
         private ParameterHandler<?>[] mParameterHandlers;
         
         public Builder(Method method) {
@@ -73,6 +77,8 @@ public class ServiceMethod {
         }
         
         public ServiceMethod build() {
+
+            parseClassName(mMethod);
 
             for (Annotation annotation : mMethodAnnotations) {
                 parseMethodAnnotation(annotation);
@@ -96,6 +102,13 @@ public class ServiceMethod {
             }
             
             return new ServiceMethod(this);
+        }
+
+        private void parseClassName(Method method) {
+            ClassName className = method.getDeclaringClass().getAnnotation(ClassName.class);
+            if (className != null) {
+                mClassName = className.value();
+            }
         }
 
         private void parseMethodAnnotation(Annotation annotation) {
