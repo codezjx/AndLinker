@@ -5,8 +5,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.os.RemoteException;
+import android.util.Log;
+
+import com.codezjx.aidllib.model.Request;
+import com.codezjx.aidllib.model.Response;
 
 import java.lang.reflect.InvocationHandler;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.Map;
@@ -16,17 +22,23 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by codezjx on 2017/9/14.<br/>
  */
 public class RMessenger {
+    
+    private static final String TAG = "RMessenger";
 
     private final Map<Method, ServiceMethod> serviceMethodCache = new ConcurrentHashMap<>();
     private ServiceConnection mServiceConnection;
+    private Invoker mInvoker;
     private Context mContext;
     private String mPackageName;
     private ITransfer mTransferService;
+    private ICallback mCallback;
     
     private RMessenger(Context context, String packageName) {
+        mInvoker = Invoker.getInstance();
         mContext = context;
         mPackageName = packageName;
         mServiceConnection = createServiceConnection();
+        mCallback = createCallback();
     }
 
     @SuppressWarnings("unchecked") // Single-interface proxy creation guarded by parameter safety.
@@ -66,11 +78,41 @@ public class RMessenger {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 mTransferService = ITransfer.Stub.asInterface(service);
+                try {
+                    mTransferService.register(mCallback);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
             }
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
+                try {
+                    mTransferService.unRegister(mCallback);
+                } catch (RemoteException e) {
+                    e.printStackTrace();
+                }
                 mTransferService = null;
+            }
+        };
+    }
+
+    private ICallback createCallback() {
+        return new ICallback.Stub() {
+            @Override
+            public Response callback(Request request) throws RemoteException {
+                Log.d(TAG, "Receive callback in client:" + request.toString());
+                Object object = mInvoker.getObject(request.getTargetClass());
+                Method method = mInvoker.getMethod(request.getMethodName());
+                Object result = null;
+                try {
+                    result = method.invoke(object, request.getArgs());
+                } catch (IllegalAccessException e) {
+                    e.printStackTrace();
+                } catch (InvocationTargetException e) {
+                    e.printStackTrace();
+                }
+                return new Response(0, "Success:" + request.getMethodName(), result);
             }
         };
     }

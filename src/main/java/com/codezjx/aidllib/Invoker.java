@@ -13,10 +13,12 @@ public class Invoker {
     
     private static volatile Invoker sInstance;
 
+    private final ConcurrentHashMap<String, Class<?>> mClassTypes;
     private final ConcurrentHashMap<String, Object> mObjects;
     private final ConcurrentHashMap<String, Method> mMethods;
     
     private Invoker() {
+        mClassTypes = new ConcurrentHashMap<String, Class<?>>();
         mObjects = new ConcurrentHashMap<String, Object>();
         mMethods = new ConcurrentHashMap<String, Method>();
     }
@@ -32,8 +34,19 @@ public class Invoker {
         return sInstance;
     }
 
+    public void registerClass(Class<?> clazz) {
+        ClassName className = clazz.getAnnotation(ClassName.class);
+        if (className != null) {
+            mClassTypes.putIfAbsent(className.value(), clazz);
+        }
+    }
+
     public void registerObject(Object object) {
-        Class<?> clazz = object.getClass();
+        Class<?>[] interfaces = object.getClass().getInterfaces();
+        if (interfaces.length != 1) {
+            throw new IllegalArgumentException("Remote object must extend just one interface.");
+        }
+        Class<?> clazz = interfaces[0];
         ClassName className = clazz.getAnnotation(ClassName.class);
         if (className != null) {
             mObjects.putIfAbsent(className.value(), object);
@@ -49,6 +62,10 @@ public class Invoker {
                 mMethods.putIfAbsent(methodName.value(), method);
             }
         }
+    }
+
+    public Class<?> getClass(String className) {
+        return mClassTypes.get(className);
     }
 
     public Object getObject(String className) {

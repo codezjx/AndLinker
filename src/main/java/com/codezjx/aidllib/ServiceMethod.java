@@ -1,9 +1,9 @@
 package com.codezjx.aidllib;
 
-import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.codezjx.aidllib.annotation.Callback;
 import com.codezjx.aidllib.annotation.ClassName;
 import com.codezjx.aidllib.annotation.MethodName;
 import com.codezjx.aidllib.annotation.ParamName;
@@ -42,9 +42,8 @@ public class ServiceMethod {
                     + ") doesn't match expected count (" + handlers.length + ")");
         }
 
-        Bundle bundle = new Bundle();
         for (int p = 0; p < argumentCount; p++) {
-            handlers[p].apply(bundle, args[p]);
+            handlers[p].apply(args, p);
         }
 
         Object result = null;
@@ -118,11 +117,13 @@ public class ServiceMethod {
         }
 
         private ParameterHandler<?>  parseParameter(int p, Type parameterType, Annotation[] annotations) {
+            Class<?> rawParameterType = Utils.getRawType(parameterType);
             for (Annotation annotation : annotations) {
                 if (annotation instanceof ParamName) {
                     String paramName = ((ParamName) annotation).value();
-                    Class<?> rawParameterType = Utils.getRawType(parameterType);
                     return new ParameterHandler.ParamNameHandler<>(paramName, rawParameterType);
+                } else if (annotation instanceof Callback) {
+                    return new ParameterHandler.CallbackHandler<>(rawParameterType);
                 }
             }
             throw parameterError(p, "No support annotation found.");

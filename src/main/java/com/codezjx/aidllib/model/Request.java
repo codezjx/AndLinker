@@ -3,6 +3,8 @@ package com.codezjx.aidllib.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.Arrays;
+
 /**
  * Created by codezjx on 2017/9/13.<br/>
  */
@@ -58,5 +60,14 @@ public class Request implements Parcelable {
 
     public Object[] getArgs() {
         return mArgs;
+    }
+
+    @Override
+    public String toString() {
+        return "Request{" +
+                "mTargetClass='" + mTargetClass + '\'' +
+                ", mMethodName='" + mMethodName + '\'' +
+                ", mArgs=" + Arrays.toString(mArgs) +
+                '}';
     }
 }

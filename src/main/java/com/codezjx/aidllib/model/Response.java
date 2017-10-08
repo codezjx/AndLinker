@@ -59,4 +59,13 @@ public class Response implements Parcelable {
     public Object getResult() {
         return mResult;
     }
+
+    @Override
+    public String toString() {
+        return "Response{" +
+                "mStatusCode=" + mStatusCode +
+                ", mStatusMessage='" + mStatusMessage + '\'' +
+                ", mResult=" + mResult +
+                '}';
+    }
 }
