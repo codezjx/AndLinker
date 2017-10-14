@@ -8,15 +8,22 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.codezjx.linker.adapter.DefaultCallAdapterFactory;
 import com.codezjx.linker.model.Request;
 import com.codezjx.linker.model.Response;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+
+import static com.codezjx.linker.Utils.checkNotNull;
 
 /**
  * Created by codezjx on 2017/9/14.<br/>
@@ -30,13 +37,15 @@ public class Linker {
     private Invoker mInvoker;
     private Context mContext;
     private String mPackageName;
+    private List<CallAdapter.Factory> mAdapterFactories;
     private ITransfer mTransferService;
     private ICallback mCallback;
     
-    private Linker(Context context, String packageName) {
+    private Linker(Context context, String packageName, List<CallAdapter.Factory> adapterFactories) {
         mInvoker = Invoker.getInstance();
         mContext = context;
         mPackageName = packageName;
+        mAdapterFactories = adapterFactories;
         mServiceConnection = createServiceConnection();
         mCallback = createCallback();
     }
@@ -53,7 +62,8 @@ public class Linker {
                             return method.invoke(this, args);
                         }
                         ServiceMethod serviceMethod = loadServiceMethod(method);
-                        return serviceMethod.invoke(mTransferService, args);
+                        RemoteCall remoteCall = new RemoteCall(mTransferService, serviceMethod, args);
+                        return serviceMethod.getCallAdapter().adapt(remoteCall);
                     }
                 });
     }
@@ -71,6 +81,27 @@ public class Linker {
     
     public void unbind() {
         mContext.unbindService(mServiceConnection);
+    }
+
+    public CallAdapter<?, ?> findCallAdapter(Type returnType, Annotation[] annotations) {
+        checkNotNull(returnType, "returnType == null");
+        checkNotNull(annotations, "annotations == null");
+        
+        for (int i = 0, count = mAdapterFactories.size(); i < count; i++) {
+            CallAdapter<?, ?> adapter = mAdapterFactories.get(i).get(returnType, annotations);
+            if (adapter != null) {
+                return adapter;
+            }
+        }
+
+        StringBuilder builder = new StringBuilder("Could not locate call adapter for ")
+                .append(returnType)
+                .append(".\n");
+        builder.append("  Tried:");
+        for (int i = 0, count = mAdapterFactories.size(); i < count; i++) {
+            builder.append("\n   * ").append(mAdapterFactories.get(i).getClass().getName());
+        }
+        throw new IllegalArgumentException(builder.toString());
     }
 
     private ServiceConnection createServiceConnection() {
@@ -126,7 +157,7 @@ public class Linker {
         synchronized (serviceMethodCache) {
             result = serviceMethodCache.get(method);
             if (result == null) {
-                result = new ServiceMethod.Builder(method).build();
+                result = new ServiceMethod.Builder(this, method).build();
                 serviceMethodCache.put(method, result);
             }
         }
@@ -137,6 +168,7 @@ public class Linker {
         
         private Context mContext;
         private String mPackageName;
+        private List<CallAdapter.Factory> mAdapterFactories = new ArrayList<>();
         
         public Builder(Context context) {
             mContext = context;
@@ -147,8 +179,15 @@ public class Linker {
             return this;
         }
 
+        public Builder addCallAdapterFactory(CallAdapter.Factory factory) {
+            mAdapterFactories.add(checkNotNull(factory, "factory == null"));
+            return this;
+        }
+
         public Linker build() {
-            return new Linker(mContext, mPackageName);
+            // Add the default Call adapter
+            mAdapterFactories.add(DefaultCallAdapterFactory.INSTANCE);
+            return new Linker(mContext, mPackageName, mAdapterFactories);
         }
         
     }

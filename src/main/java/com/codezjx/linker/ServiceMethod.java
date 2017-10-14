@@ -1,14 +1,9 @@
 package com.codezjx.linker;
 
-import android.os.RemoteException;
-import android.util.Log;
-
 import com.codezjx.linker.annotation.Callback;
 import com.codezjx.linker.annotation.ClassName;
 import com.codezjx.linker.annotation.MethodName;
 import com.codezjx.linker.annotation.ParamName;
-import com.codezjx.linker.model.Request;
-import com.codezjx.linker.model.Response;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -22,53 +17,49 @@ public class ServiceMethod {
     
     private static final String TAG = "ServiceMethod";
 
+    private CallAdapter mCallAdapter;
     private String mClassName;
     private String mMethodName;
     private ParameterHandler<?>[] mParameterHandlers;
 
     public ServiceMethod(Builder builder) {
+        mCallAdapter = builder.mCallAdapter;
         mClassName = builder.mClassName;
         mMethodName = builder.mMethodName;
         mParameterHandlers = builder.mParameterHandlers;
     }
 
-    public Object invoke(ITransfer transfer, Object[] args) {
-        @SuppressWarnings("unchecked")
-        ParameterHandler<Object>[] handlers = (ParameterHandler<Object>[]) mParameterHandlers;
+    public CallAdapter getCallAdapter() {
+        return mCallAdapter;
+    }
 
-        int argumentCount = args != null ? args.length : 0;
-        if (argumentCount != handlers.length) {
-            throw new IllegalArgumentException("Argument count (" + argumentCount
-                    + ") doesn't match expected count (" + handlers.length + ")");
-        }
+    public String getClassName() {
+        return mClassName;
+    }
 
-        for (int p = 0; p < argumentCount; p++) {
-            handlers[p].apply(args, p);
-        }
+    public String getMethodName() {
+        return mMethodName;
+    }
 
-        Object result = null;
-        try {
-            Response response = transfer.execute(new Request(mClassName, mMethodName, args));
-            result = response.getResult();
-            Log.d(TAG, "Response from server, code:" + response.getStatusCode() + " msg:" + response.getStatusMessage());
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        }
-        return result;
+    public ParameterHandler<?>[] getParameterHandlers() {
+        return mParameterHandlers;
     }
 
     public static final class Builder {
 
+        private Linker mLinker;
         private Method mMethod;
         private Annotation[] mMethodAnnotations;
         private Annotation[][] mParameterAnnotationsArray;
         private Type[] mParameterTypes;
 
+        private CallAdapter mCallAdapter;
         private String mClassName = "";
         private String mMethodName = "";
         private ParameterHandler<?>[] mParameterHandlers;
-        
-        public Builder(Method method) {
+
+        public Builder(Linker linker, Method method) {
+            mLinker = linker;
             mMethod = method;
             mMethodAnnotations = method.getAnnotations();
             mParameterAnnotationsArray = method.getParameterAnnotations();
@@ -76,7 +67,7 @@ public class ServiceMethod {
         }
         
         public ServiceMethod build() {
-
+            mCallAdapter = createCallAdapter();
             parseClassName(mMethod);
 
             for (Annotation annotation : mMethodAnnotations) {
@@ -107,6 +98,24 @@ public class ServiceMethod {
             ClassName className = method.getDeclaringClass().getAnnotation(ClassName.class);
             if (className != null) {
                 mClassName = className.value();
+            }
+        }
+
+        private CallAdapter createCallAdapter() {
+            Type returnType = mMethod.getGenericReturnType();
+            if (Utils.hasUnresolvableType(returnType)) {
+                throw methodError(
+                        "Method return type must not include a type variable or wildcard: %s", returnType);
+            }
+            if (returnType == void.class) {
+                throw methodError("Service methods cannot return void.");
+            }
+            Annotation[] annotations = mMethod.getAnnotations();
+            try {
+                //noinspection unchecked
+                return mLinker.findCallAdapter(returnType, annotations);
+            } catch (RuntimeException e) { // Wide exception range because factories are user code.
+                throw methodError(e, "Unable to create call adapter for %s", returnType);
             }
         }
 
