@@ -1,4 +1,4 @@
-package com.codezjx.aidllib;
+package com.codezjx.linker;
 
 import android.os.Parcel;
 import android.os.Parcelable;

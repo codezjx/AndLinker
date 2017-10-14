@@ -1,14 +1,14 @@
-package com.codezjx.aidllib;
+package com.codezjx.linker;
 
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.codezjx.aidllib.annotation.Callback;
-import com.codezjx.aidllib.annotation.ClassName;
-import com.codezjx.aidllib.annotation.MethodName;
-import com.codezjx.aidllib.annotation.ParamName;
-import com.codezjx.aidllib.model.Request;
-import com.codezjx.aidllib.model.Response;
+import com.codezjx.linker.annotation.Callback;
+import com.codezjx.linker.annotation.ClassName;
+import com.codezjx.linker.annotation.MethodName;
+import com.codezjx.linker.annotation.ParamName;
+import com.codezjx.linker.model.Request;
+import com.codezjx.linker.model.Response;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;

@@ -1,4 +1,4 @@
-package com.codezjx.aidllib;
+package com.codezjx.linker;
 
 import android.app.Service;
 import android.content.Intent;
@@ -9,10 +9,10 @@ import android.os.RemoteException;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
-import com.codezjx.aidllib.annotation.ClassName;
-import com.codezjx.aidllib.annotation.MethodName;
-import com.codezjx.aidllib.model.Request;
-import com.codezjx.aidllib.model.Response;
+import com.codezjx.linker.annotation.ClassName;
+import com.codezjx.linker.annotation.MethodName;
+import com.codezjx.linker.model.Request;
+import com.codezjx.linker.model.Response;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;

@@ -1,4 +1,4 @@
-package com.codezjx.aidllib;
+package com.codezjx.linker;
 
 import android.content.ComponentName;
 import android.content.Context;
@@ -8,8 +8,8 @@ import android.os.IBinder;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.codezjx.aidllib.model.Request;
-import com.codezjx.aidllib.model.Response;
+import com.codezjx.linker.model.Request;
+import com.codezjx.linker.model.Response;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.InvocationTargetException;
@@ -21,7 +21,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by codezjx on 2017/9/14.<br/>
  */
-public class RMessenger {
+public class Linker {
     
     private static final String TAG = "RMessenger";
 
@@ -33,7 +33,7 @@ public class RMessenger {
     private ITransfer mTransferService;
     private ICallback mCallback;
     
-    private RMessenger(Context context, String packageName) {
+    private Linker(Context context, String packageName) {
         mInvoker = Invoker.getInstance();
         mContext = context;
         mPackageName = packageName;
@@ -147,8 +147,8 @@ public class RMessenger {
             return this;
         }
 
-        public RMessenger build() {
-            return new RMessenger(mContext, mPackageName);
+        public Linker build() {
+            return new Linker(mContext, mPackageName);
         }
         
     }

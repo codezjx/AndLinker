@@ -1,4 +1,4 @@
-package com.codezjx.aidllib;
+package com.codezjx.linker;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;

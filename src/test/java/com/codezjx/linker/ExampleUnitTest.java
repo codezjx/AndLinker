@@ -1,4 +1,4 @@
-package com.codezjx.aidllib;
+package com.codezjx.linker;
 
 import org.junit.Test;
 

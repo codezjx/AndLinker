@@ -1,16 +1,16 @@
-package com.codezjx.aidllib.annotation;
+package com.codezjx.linker.annotation;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
-import static java.lang.annotation.ElementType.PARAMETER;
+import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
  * Created by codezjx on 2017/9/14.<br/>
  */
-@Target(PARAMETER)
+@Target(METHOD)
 @Retention(RUNTIME)
-public @interface Callback {
-
+public @interface MethodName {
+    String value();
 }

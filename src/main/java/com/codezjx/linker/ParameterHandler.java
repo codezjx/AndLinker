@@ -1,8 +1,8 @@
-package com.codezjx.aidllib;
+package com.codezjx.linker;
 
 import android.util.Log;
 
-import com.codezjx.aidllib.annotation.ClassName;
+import com.codezjx.linker.annotation.ClassName;
 
 /**
  * Created by codezjx on 2017/9/17.<br/>

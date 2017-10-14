@@ -1,7 +1,7 @@
-package com.codezjx.aidllib;
+package com.codezjx.linker;
 
-import com.codezjx.aidllib.annotation.ClassName;
-import com.codezjx.aidllib.annotation.MethodName;
+import com.codezjx.linker.annotation.ClassName;
+import com.codezjx.linker.annotation.MethodName;
 
 import java.lang.reflect.Method;
 import java.util.concurrent.ConcurrentHashMap;
