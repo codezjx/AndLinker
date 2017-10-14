@@ -1,13 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-
-          package="com.codezjx.aidllib"
->
+    package="com.codezjx.linker">
 
     <application android:allowBackup="true"
-                 android:label="@string/app_name"
-                 android:supportsRtl="true"
-    >
-
+                 android:supportsRtl="true">
     </application>
 
 </manifest>
