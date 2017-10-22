@@ -14,7 +14,6 @@ import com.codezjx.linker.model.Response;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.lang.reflect.Type;
@@ -133,17 +132,7 @@ public class Linker {
             @Override
             public Response callback(Request request) throws RemoteException {
                 Log.d(TAG, "Receive callback in client:" + request.toString());
-                Object object = mInvoker.getObject(request.getTargetClass());
-                Method method = mInvoker.getMethod(request.getMethodName());
-                Object result = null;
-                try {
-                    result = method.invoke(object, request.getArgs());
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-                return new Response(0, "Success:" + request.getMethodName(), result);
+                return mInvoker.invoke(request);
             }
         };
     }
