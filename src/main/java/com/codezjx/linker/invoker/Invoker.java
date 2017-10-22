@@ -1,17 +1,19 @@
-package com.codezjx.linker;
+package com.codezjx.linker.invoker;
 
 import android.os.Binder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.codezjx.linker.CallbackWrapper;
+import com.codezjx.linker.ICallback;
+import com.codezjx.linker.Utils;
 import com.codezjx.linker.annotation.ClassName;
 import com.codezjx.linker.annotation.MethodName;
 import com.codezjx.linker.model.Request;
 import com.codezjx.linker.model.Response;
 
 import java.lang.reflect.InvocationHandler;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,14 +27,12 @@ public class Invoker {
     private static volatile Invoker sInstance;
 
     private final ConcurrentHashMap<String, Class<?>> mClassTypes;
-    private final ConcurrentHashMap<String, Object> mObjects;
-    private final ConcurrentHashMap<String, Method> mMethods;
+    private final ConcurrentHashMap<String, MethodExecutor> mMethodExecutors;
     private final RemoteCallbackList<ICallback> mCallbackList;
     
     private Invoker() {
         mClassTypes = new ConcurrentHashMap<String, Class<?>>();
-        mObjects = new ConcurrentHashMap<String, Object>();
-        mMethods = new ConcurrentHashMap<String, Method>();
+        mMethodExecutors = new ConcurrentHashMap<String, MethodExecutor>();
         mCallbackList = new RemoteCallbackList<ICallback>();
     }
     
@@ -54,17 +54,26 @@ public class Invoker {
         }
     }
 
-    public void registerObject(Object object) {
-        Class<?>[] interfaces = object.getClass().getInterfaces();
+    public void registerObject(Object target) {
+        Class<?>[] interfaces = target.getClass().getInterfaces();
         if (interfaces.length != 1) {
             throw new IllegalArgumentException("Remote object must extend just one interface.");
         }
         Class<?> clazz = interfaces[0];
-        ClassName className = clazz.getAnnotation(ClassName.class);
-        if (className != null) {
-            mObjects.putIfAbsent(className.value(), object);
+        ClassName classNameAnnotation = clazz.getAnnotation(ClassName.class);
+        if (classNameAnnotation == null) {
+            throw new IllegalArgumentException("Interface doesn't has any annotation.");
         }
-        registerMethod(clazz);
+        // Cache all annotation method
+        Method[] methods = clazz.getDeclaredMethods();
+        for (Method method : methods) {
+            MethodName methodNameAnnotation = method.getAnnotation(MethodName.class);
+            if (methodNameAnnotation != null) {
+                String key = classNameAnnotation.value() + methodNameAnnotation.value();
+                MethodExecutor executor = new MethodExecutor(target, method);
+                mMethodExecutors.putIfAbsent(key, executor);
+            }
+        }
     }
 
     public void unRegisterObject(Object object) {
@@ -72,8 +81,6 @@ public class Invoker {
     }
 
     public Response invoke(Request request) {
-        Object object = getObject(request.getTargetClass());
-        Method method = getMethod(request.getMethodName());
         Object[] args = request.getArgs();
         for (int i = 0; i < args.length; i++) {
             if (args[i] instanceof CallbackWrapper) {
@@ -83,29 +90,12 @@ public class Invoker {
                 args[i] = getProxy(clazz, pid);
             }
         }
-        Object result = null;
-        try {
-            result = method.invoke(object, args);
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InvocationTargetException e) {
-            e.printStackTrace();
-        }
-        return new Response(0, "Success:" + request.getMethodName(), result);
+        MethodExecutor executor = getMethodExecutor(request);
+        return executor.execute(args);
     }
 
     public RemoteCallbackList<ICallback> getCallbackList() {
         return mCallbackList;
-    }
-
-    private void registerMethod(Class<?> clazz) {
-        Method[] methods = clazz.getDeclaredMethods();
-        for (Method method : methods) {
-            MethodName methodName = method.getAnnotation(MethodName.class);
-            if (methodName != null) {
-                mMethods.putIfAbsent(methodName.value(), method);
-            }
-        }
     }
 
     @SuppressWarnings("unchecked") // Single-interface proxy creation guarded by parameter safety.
@@ -159,12 +149,9 @@ public class Invoker {
         return mClassTypes.get(className);
     }
 
-    private Object getObject(String className) {
-        return mObjects.get(className);
-    }
-
-    private Method getMethod(String methodName) {
-        return mMethods.get(methodName);
+    private MethodExecutor getMethodExecutor(Request request) {
+        String key = request.getTargetClass() + request.getMethodName();
+        return mMethodExecutors.get(key);
     }
     
 }

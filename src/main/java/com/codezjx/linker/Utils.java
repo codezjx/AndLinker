@@ -16,7 +16,7 @@ public class Utils {
         
     }
 
-    static <T> void validateServiceInterface(Class<T> service) {
+    public static <T> void validateServiceInterface(Class<T> service) {
         if (!service.isInterface()) {
             throw new IllegalArgumentException("API declarations must be interfaces.");
         }
