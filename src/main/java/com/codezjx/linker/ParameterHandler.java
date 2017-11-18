@@ -15,23 +15,6 @@ import java.lang.annotation.Annotation;
 public interface ParameterHandler<T> {
 
     void apply(RequestBuilder builder, T value, int index);
-
-    final class ParamNameHandler<T> implements ParameterHandler<T> {
-
-        String mParamName;
-        Class<?> mParamType;
-
-        public ParamNameHandler(String paramName, Class<?> paramType) {
-            mParamName = paramName;
-            mParamType = paramType;
-        }
-
-        @Override
-        public void apply(RequestBuilder builder, T value, int index) {
-            Log.d("ParamNameHandler", "ParameterHandler mParamName:" + mParamName + " mParamType:" + mParamType + " value:" + value);
-        }
-
-    }
     
     final class CallbackHandler<T> implements ParameterHandler<T> {
 

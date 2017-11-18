@@ -6,7 +6,6 @@ import com.codezjx.linker.annotation.In;
 import com.codezjx.linker.annotation.Inout;
 import com.codezjx.linker.annotation.MethodName;
 import com.codezjx.linker.annotation.Out;
-import com.codezjx.linker.annotation.ParamName;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
@@ -131,10 +130,7 @@ public class ServiceMethod {
         private ParameterHandler<?>  parseParameter(int p, Type parameterType, Annotation[] annotations) {
             Class<?> rawParameterType = Utils.getRawType(parameterType);
             for (Annotation annotation : annotations) {
-                if (annotation instanceof ParamName) {
-                    String paramName = ((ParamName) annotation).value();
-                    return new ParameterHandler.ParamNameHandler<>(paramName, rawParameterType);
-                } else if (annotation instanceof Callback) {
+                if (annotation instanceof Callback) {
                     return new ParameterHandler.CallbackHandler<>(rawParameterType);
                 } else if (annotation instanceof In || annotation instanceof Out || annotation instanceof Inout) {
                     return new ParameterHandler.ParamDirectionHandler<>(annotation, rawParameterType);
