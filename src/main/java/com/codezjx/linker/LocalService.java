@@ -32,8 +32,8 @@ public class LocalService extends Service {
     private ITransfer.Stub mBinder = new ITransfer.Stub() {
         @Override
         public Response execute(Request request) throws RemoteException {
-            for (Object param : request.getArgs()) {
-                Log.d(TAG, "Receive param:" + " value:" + param + " class:" + param.getClass());
+            for (ParameterWrapper wrapper : request.getArgsWrapper()) {
+                Log.d(TAG, "Receive param, value:" + wrapper.getParam());
             }
             Log.d(TAG, "Receive request:" + request.getMethodName());
             return mInvoker.invoke(request);

@@ -5,7 +5,7 @@ import com.codezjx.linker.model.Response;
 import com.codezjx.linker.ICallback;
 
 interface ITransfer {
-    Response execute(in Request request);
+    Response execute(inout Request request);
     void register(ICallback callback);
     void unRegister(ICallback callback);
 }

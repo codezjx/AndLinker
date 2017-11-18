@@ -3,21 +3,25 @@ package com.codezjx.linker.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.codezjx.linker.ParameterWrapper;
+import com.codezjx.linker.SuperParcelable;
+
+import java.lang.reflect.Array;
 import java.util.Arrays;
 
 /**
  * Created by codezjx on 2017/9/13.<br/>
  */
-public class Request implements Parcelable {
+public class Request implements SuperParcelable {
 
     private String mTargetClass;
     private String mMethodName;
-    private Object[] mArgs;
+    private ParameterWrapper[] mArgsWrapper;
 
-    public Request(String targetClass, String methodName, Object[] args) {
+    public Request(String targetClass, String methodName, ParameterWrapper[] argsWrapper) {
         mTargetClass = targetClass;
         mMethodName = methodName;
-        mArgs = args;
+        mArgsWrapper = argsWrapper;
     }
     
     @Override
@@ -27,15 +31,36 @@ public class Request implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeString(this.mTargetClass);
-        dest.writeString(this.mMethodName);
-        dest.writeArray(mArgs);
+        dest.writeString(mTargetClass);
+        dest.writeString(mMethodName);
+        dest.writeParcelableArray(mArgsWrapper, flags);
+    }
+
+    @Override
+    public void readFromParcel(Parcel in) {
+        mTargetClass = in.readString();
+        mMethodName = in.readString();
+        mArgsWrapper = readParcelableArray(getClass().getClassLoader(), ParameterWrapper.class, in);
     }
 
     protected Request(Parcel in) {
-        mTargetClass = in.readString();
-        mMethodName = in.readString();
-        mArgs = in.readArray(getClass().getClassLoader());
+        readFromParcel(in);
+    }
+
+    /**
+     * Code from {@link Parcel}.readParcelableArray(ClassLoader loader, Class<T> clazz), it's a hide method.
+     */
+    @SuppressWarnings("unchecked")
+    private <T extends Parcelable> T[] readParcelableArray(ClassLoader loader, Class<T> clazz, Parcel in) {
+        int N = in.readInt();
+        if (N < 0) {
+            return null;
+        }
+        T[] p = (T[]) Array.newInstance(clazz, N);
+        for (int i = 0; i < N; i++) {
+            p[i] = in.readParcelable(loader);
+        }
+        return p;
     }
 
     public static final Creator<Request> CREATOR = new Creator<Request>() {
@@ -58,8 +83,8 @@ public class Request implements Parcelable {
         return mMethodName;
     }
 
-    public Object[] getArgs() {
-        return mArgs;
+    public ParameterWrapper[] getArgsWrapper() {
+        return mArgsWrapper;
     }
 
     @Override
@@ -67,7 +92,7 @@ public class Request implements Parcelable {
         return "Request{" +
                 "mTargetClass='" + mTargetClass + '\'' +
                 ", mMethodName='" + mMethodName + '\'' +
-                ", mArgs=" + Arrays.toString(mArgs) +
+                ", mArgsWrapper=" + Arrays.toString(mArgsWrapper) +
                 '}';
     }
 }

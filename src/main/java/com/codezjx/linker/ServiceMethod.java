@@ -2,7 +2,10 @@ package com.codezjx.linker;
 
 import com.codezjx.linker.annotation.Callback;
 import com.codezjx.linker.annotation.ClassName;
+import com.codezjx.linker.annotation.In;
+import com.codezjx.linker.annotation.Inout;
 import com.codezjx.linker.annotation.MethodName;
+import com.codezjx.linker.annotation.Out;
 import com.codezjx.linker.annotation.ParamName;
 
 import java.lang.annotation.Annotation;
@@ -133,6 +136,8 @@ public class ServiceMethod {
                     return new ParameterHandler.ParamNameHandler<>(paramName, rawParameterType);
                 } else if (annotation instanceof Callback) {
                     return new ParameterHandler.CallbackHandler<>(rawParameterType);
+                } else if (annotation instanceof In || annotation instanceof Out || annotation instanceof Inout) {
+                    return new ParameterHandler.ParamDirectionHandler<>(annotation, rawParameterType);
                 }
             }
             throw parameterError(p, "No support annotation found.");

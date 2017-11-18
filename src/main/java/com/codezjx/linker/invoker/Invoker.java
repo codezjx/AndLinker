@@ -5,8 +5,8 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.codezjx.linker.CallbackWrapper;
 import com.codezjx.linker.ICallback;
+import com.codezjx.linker.ParameterWrapper;
 import com.codezjx.linker.Utils;
 import com.codezjx.linker.annotation.ClassName;
 import com.codezjx.linker.annotation.MethodName;
@@ -81,13 +81,15 @@ public class Invoker {
     }
 
     public Response invoke(Request request) {
-        Object[] args = request.getArgs();
-        for (int i = 0; i < args.length; i++) {
-            if (args[i] instanceof CallbackWrapper) {
+        ParameterWrapper[] wrappers = request.getArgsWrapper();
+        Object[] args = new Object[wrappers.length];
+        for (int i = 0; i < wrappers.length; i++) {
+            // Assign the origin args parameter
+            args[i] = wrappers[i].getParam();
+            if (wrappers[i].isCallback()) {
                 int pid = Binder.getCallingPid();
-                CallbackWrapper wrapper = (CallbackWrapper) args[i];
-                Class<?> clazz = getClass(wrapper.getClassName());
-                args[i] = getProxy(clazz, pid);
+                Class<?> clazz = getClass(wrappers[i].getParamClass());
+                args[i] = getCallbackProxy(clazz, pid);
             }
         }
         MethodExecutor executor = getMethodExecutor(request);
@@ -99,9 +101,9 @@ public class Invoker {
     }
 
     @SuppressWarnings("unchecked") // Single-interface proxy creation guarded by parameter safety.
-    private <T> T getProxy(final Class<T> service, final int pid) {
+    private <T> T getCallbackProxy(final Class<T> service, final int pid) {
         Utils.validateServiceInterface(service);
-        return (T) Proxy.newProxyInstance(service.getClassLoader(), new Class<?>[]{service},
+        return (T) Proxy.newProxyInstance(service.getClassLoader(), new Class<?>[] { service },
                 new InvocationHandler() {
                     @Override
                     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
@@ -111,7 +113,7 @@ public class Invoker {
                             int cookiePid = (int) mCallbackList.getBroadcastCookie(i);
                             if (cookiePid == pid) {
                                 try {
-                                    Request request = new Request(parseClassName(service), parseMethodName(method), args);
+                                    Request request = createCallbackRequest(parseClassName(service), parseMethodName(method), args);
                                     Response response = mCallbackList.getBroadcastItem(i).callback(request);
                                     result = response.getResult();
                                     Log.d(TAG, "Execute remote callback:" + response.toString());
@@ -125,6 +127,14 @@ public class Invoker {
                         return result;
                     }
                 });
+    }
+
+    private Request createCallbackRequest(String targetClass, String methodName, Object[] args) {
+        ParameterWrapper[] wrappers = new ParameterWrapper[args.length];
+        for (int i = 0; i < args.length; i++) {
+            wrappers[i] = new ParameterWrapper(args[i]);
+        }
+        return new Request(targetClass, methodName, wrappers);
     }
 
     private String parseClassName(Class<?> clazz) {

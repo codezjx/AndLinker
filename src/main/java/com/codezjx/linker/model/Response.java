@@ -25,8 +25,8 @@ public class Response implements Parcelable {
 
     @Override
     public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(this.mStatusCode);
-        dest.writeString(this.mStatusMessage);
+        dest.writeInt(mStatusCode);
+        dest.writeString(mStatusMessage);
         dest.writeValue(mResult);
     }
 

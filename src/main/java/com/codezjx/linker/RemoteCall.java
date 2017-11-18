@@ -3,7 +3,6 @@ package com.codezjx.linker;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.codezjx.linker.model.Request;
 import com.codezjx.linker.model.Response;
 
 /**
@@ -34,14 +33,14 @@ public class RemoteCall implements Call<Object> {
                     + ") doesn't match expected count (" + handlers.length + ")");
         }
 
+        RequestBuilder requestBuilder = new RequestBuilder(mServiceMethod.getClassName(), mServiceMethod.getMethodName(), argumentCount);
         for (int p = 0; p < argumentCount; p++) {
-            handlers[p].apply(mArgs, p);
+            handlers[p].apply(requestBuilder, mArgs[p], p);
         }
 
         Object result = null;
         try {
-            Response response = mTransferService.execute(new Request(mServiceMethod.getClassName(),
-                    mServiceMethod.getMethodName(), mArgs));
+            Response response = mTransferService.execute(requestBuilder.build());
             result = response.getResult();
             Log.d(TAG, "Response from server, code:" + response.getStatusCode() + " msg:" + response.getStatusMessage());
         } catch (RemoteException e) {
