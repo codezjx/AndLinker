@@ -1,11 +1,15 @@
 package com.codezjx.linker;
 
+import android.os.Parcelable;
+
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
 import java.lang.reflect.WildcardType;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by codezjx on 2017/9/14.<br/>
@@ -95,5 +99,77 @@ public class Utils {
         return object;
     }
 
+    static boolean canOnlyBeInType(Class<?> classType) {
+        return classType.isPrimitive() || classType == String.class || classType == CharSequence.class;
+    }
+
+    static boolean isArrayType(int type) {
+        return type == BaseTypeWrapper.TYPE_BYTEARRAY || type == BaseTypeWrapper.TYPE_SHORTARRAY || type == BaseTypeWrapper.TYPE_INTARRAY
+                || type == BaseTypeWrapper.TYPE_LONGARRAY || type == BaseTypeWrapper.TYPE_FLOATARRAY || type == BaseTypeWrapper.TYPE_DOUBLEARRAY
+                || type == BaseTypeWrapper.TYPE_BOOLEANARRAY || type == BaseTypeWrapper.TYPE_CHARARRAY || type == BaseTypeWrapper.TYPE_STRINGARRAY
+                || type == BaseTypeWrapper.TYPE_CHARSEQUENCEARRAY || type == BaseTypeWrapper.TYPE_PARCELABLEARRAY;
+    }
+
+    static boolean isArrayType(Class<?> classType) {
+        return classType == byte[].class || classType == short[].class || classType == int[].class || classType == long[].class
+                || classType == float[].class || classType == double[].class || classType == boolean[].class || classType == char[].class
+                || classType == String[].class || classType == CharSequence[].class || classType == Parcelable[].class;
+    }
+
+    static int getTypeByClass(Class<?> classType) {
+        int type;
+        if (classType == byte.class || classType == Byte.class) {
+            type = BaseTypeWrapper.TYPE_BYTE;
+        } else if (classType == short.class || classType == Short.class) {
+            type = BaseTypeWrapper.TYPE_SHORT;
+        } else if (classType == int.class || classType == Integer.class) {
+            type = BaseTypeWrapper.TYPE_INT;
+        } else if (classType == long.class || classType == Long.class) {
+            type = BaseTypeWrapper.TYPE_LONG;
+        } else if (classType == float.class || classType == Float.class) {
+            type = BaseTypeWrapper.TYPE_FLOAT;
+        } else if (classType == double.class || classType == Double.class) {
+            type = BaseTypeWrapper.TYPE_DOUBLE;
+        } else if (classType == boolean.class || classType == Boolean.class) {
+            type = BaseTypeWrapper.TYPE_BOOLEAN;
+        } else if (classType == char.class || classType == Character.class) {
+            type = BaseTypeWrapper.TYPE_CHAR;
+        } else if (classType == byte[].class) {
+            type = BaseTypeWrapper.TYPE_BYTEARRAY;
+        } else if (classType == short[].class) {
+            type = BaseTypeWrapper.TYPE_SHORTARRAY;
+        } else if (classType == int[].class) {
+            type = BaseTypeWrapper.TYPE_INTARRAY;
+        } else if (classType == long[].class) {
+            type = BaseTypeWrapper.TYPE_LONGARRAY;
+        } else if (classType == float[].class) {
+            type = BaseTypeWrapper.TYPE_FLOATARRAY;
+        } else if (classType == double[].class) {
+            type = BaseTypeWrapper.TYPE_DOUBLEARRAY;
+        } else if (classType == boolean[].class) {
+            type = BaseTypeWrapper.TYPE_BOOLEANARRAY;
+        } else if (classType == char[].class) {
+            type = BaseTypeWrapper.TYPE_CHARARRAY;
+        } else if (classType == String.class) {
+            type = BaseTypeWrapper.TYPE_STRING;
+        } else if (classType == String[].class) {
+            type = BaseTypeWrapper.TYPE_STRINGARRAY;
+        } else if (classType == CharSequence.class) {
+            type = BaseTypeWrapper.TYPE_CHARSEQUENCE;
+        } else if (classType == CharSequence[].class) {
+            type = BaseTypeWrapper.TYPE_CHARSEQUENCEARRAY;
+        } else if (classType == Parcelable.class) {
+            type = BaseTypeWrapper.TYPE_PARCELABLE;
+        } else if (classType == Parcelable[].class) {
+            type = BaseTypeWrapper.TYPE_PARCELABLEARRAY;
+        } else if (classType == List.class) {
+            type = BaseTypeWrapper.TYPE_LIST;
+        } else if (classType == Map.class) {
+            type = BaseTypeWrapper.TYPE_MAP;
+        } else {
+            type = BaseTypeWrapper.TYPE_EMPTY;
+        }
+        return type;
+    }
 
 }

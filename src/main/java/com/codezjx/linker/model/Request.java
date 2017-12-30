@@ -3,7 +3,7 @@ package com.codezjx.linker.model;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import com.codezjx.linker.ParameterWrapper;
+import com.codezjx.linker.BaseTypeWrapper;
 import com.codezjx.linker.SuperParcelable;
 
 import java.lang.reflect.Array;
@@ -16,9 +16,13 @@ public class Request implements SuperParcelable {
 
     private String mTargetClass;
     private String mMethodName;
-    private ParameterWrapper[] mArgsWrapper;
+    private BaseTypeWrapper[] mArgsWrapper;
 
-    public Request(String targetClass, String methodName, ParameterWrapper[] argsWrapper) {
+    public Request() {
+        
+    }
+
+    public Request(String targetClass, String methodName, BaseTypeWrapper[] argsWrapper) {
         mTargetClass = targetClass;
         mMethodName = methodName;
         mArgsWrapper = argsWrapper;
@@ -40,11 +44,23 @@ public class Request implements SuperParcelable {
     public void readFromParcel(Parcel in) {
         mTargetClass = in.readString();
         mMethodName = in.readString();
-        mArgsWrapper = readParcelableArray(getClass().getClassLoader(), ParameterWrapper.class, in);
+        readParcelableArrayFromParcel(in);
     }
 
     protected Request(Parcel in) {
-        readFromParcel(in);
+        mTargetClass = in.readString();
+        mMethodName = in.readString();
+        mArgsWrapper = readParcelableArray(getClass().getClassLoader(), BaseTypeWrapper.class, in);
+    }
+
+    private void readParcelableArrayFromParcel(Parcel in) {
+        int N = in.readInt();
+        if (N < 0) {
+            return;
+        }
+        for (int i = 0; i < N; i++) {
+            mArgsWrapper[i].readFromParcel(in);
+        }
     }
 
     /**
@@ -83,7 +99,7 @@ public class Request implements SuperParcelable {
         return mMethodName;
     }
 
-    public ParameterWrapper[] getArgsWrapper() {
+    public BaseTypeWrapper[] getArgsWrapper() {
         return mArgsWrapper;
     }
 

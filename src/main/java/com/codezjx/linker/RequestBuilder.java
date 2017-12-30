@@ -9,15 +9,15 @@ final class RequestBuilder {
 
     private String mTargetClass;
     private String mMethodName;
-    private ParameterWrapper[] mParameterWrappers;
+    private BaseTypeWrapper[] mParameterWrappers;
 
     RequestBuilder(String targetClass, String methodName, int argumentCount) {
         mTargetClass = targetClass;
         mMethodName = methodName;
-        mParameterWrappers = new ParameterWrapper[argumentCount];
+        mParameterWrappers = new BaseTypeWrapper[argumentCount];
     }
 
-    void applyWrapper(int index, ParameterWrapper wrapper) {
+    void applyWrapper(int index, BaseTypeWrapper wrapper) {
         if (index < 0 || index >= mParameterWrappers.length) {
             throw new IllegalArgumentException("Index out of range.");
         }

@@ -32,9 +32,7 @@ public interface ParameterHandler<T> {
             if (StringUtils.isBlank(className)) {
                 throw new IllegalArgumentException("Callback type must provide @ClassName");
             }
-            ParameterWrapper wrapper = new ParameterWrapper(value);
-            wrapper.setParamClass(className);
-            wrapper.setCallback(true);
+            CallbackTypeWrapper wrapper = new CallbackTypeWrapper(className);
             builder.applyWrapper(index, wrapper);
         }
 
@@ -53,20 +51,17 @@ public interface ParameterHandler<T> {
         @Override
         public void apply(RequestBuilder builder, T value, int index) {
             Log.d("ParamDirectionHandler", " mParamType:" + mParamType + " value:" + value + " index:" + index);
-//            boolean isPrimitive = mParamType.isPrimitive();
-//            if (isPrimitive) {
-//                return;
-//            }
-            int direction = ParameterWrapper.DIRECTION_IN;
-            if (mAnnotation instanceof In) {
-                direction = ParameterWrapper.DIRECTION_IN;
-            } else if (mAnnotation instanceof Out) {
-                direction = ParameterWrapper.DIRECTION_OUT;
-            } else if (mAnnotation instanceof Inout) {
-                direction = ParameterWrapper.DIRECTION_INOUT;
+            if (Utils.canOnlyBeInType(mParamType) && !(mAnnotation instanceof In)) {
+                throw new IllegalArgumentException("Primitives are in by default, and cannot be otherwise.");
             }
-            ParameterWrapper wrapper = new ParameterWrapper(value);
-            wrapper.setParamDirection(direction);
+            BaseTypeWrapper wrapper = null;
+            if (mAnnotation instanceof In) {
+                wrapper = new InTypeWrapper(value, mParamType);
+            } else if (mAnnotation instanceof Out) {
+                wrapper = new OutTypeWrapper(value, mParamType);
+            } else if (mAnnotation instanceof Inout) {
+                wrapper = new InOutTypeWrapper(value, mParamType);
+            }
             builder.applyWrapper(index, wrapper);
         }
     }
@@ -81,10 +76,12 @@ public interface ParameterHandler<T> {
 
         @Override
         public void apply(RequestBuilder builder, T value, int index) {
-            ParameterWrapper wrapper = new ParameterWrapper(value);
-            int type = ParameterWrapper.TYPE_NULL;
-            wrapper.setParamType(type);
-            builder.applyWrapper(index, wrapper);
+            if (Utils.canOnlyBeInType(mParamType)) {
+                InTypeWrapper wrapper = new InTypeWrapper(value, mParamType);
+                builder.applyWrapper(index, wrapper);
+            } else {
+                throw new IllegalArgumentException("For any not primitive type, you must specify @In, @Out or @Inout");
+            }
         }
     }
 }

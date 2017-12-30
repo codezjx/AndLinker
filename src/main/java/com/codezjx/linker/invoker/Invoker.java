@@ -5,8 +5,10 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.codezjx.linker.BaseTypeWrapper;
+import com.codezjx.linker.CallbackTypeWrapper;
 import com.codezjx.linker.ICallback;
-import com.codezjx.linker.ParameterWrapper;
+import com.codezjx.linker.InTypeWrapper;
 import com.codezjx.linker.Utils;
 import com.codezjx.linker.annotation.ClassName;
 import com.codezjx.linker.annotation.MethodName;
@@ -81,14 +83,14 @@ public class Invoker {
     }
 
     public Response invoke(Request request) {
-        ParameterWrapper[] wrappers = request.getArgsWrapper();
+        BaseTypeWrapper[] wrappers = request.getArgsWrapper();
         Object[] args = new Object[wrappers.length];
         for (int i = 0; i < wrappers.length; i++) {
             // Assign the origin args parameter
             args[i] = wrappers[i].getParam();
-            if (wrappers[i].isCallback()) {
+            if (wrappers[i].getType() == BaseTypeWrapper.TYPE_CALLBACK) {
                 int pid = Binder.getCallingPid();
-                Class<?> clazz = getClass(wrappers[i].getParamClass());
+                Class<?> clazz = getClass(((CallbackTypeWrapper) wrappers[i]).getClassName());
                 args[i] = getCallbackProxy(clazz, pid);
             }
         }
@@ -130,9 +132,9 @@ public class Invoker {
     }
 
     private Request createCallbackRequest(String targetClass, String methodName, Object[] args) {
-        ParameterWrapper[] wrappers = new ParameterWrapper[args.length];
+        BaseTypeWrapper[] wrappers = new BaseTypeWrapper[args.length];
         for (int i = 0; i < args.length; i++) {
-            wrappers[i] = new ParameterWrapper(args[i]);
+            wrappers[i] = new InTypeWrapper(args[i], args[i].getClass());
         }
         return new Request(targetClass, methodName, wrappers);
     }
