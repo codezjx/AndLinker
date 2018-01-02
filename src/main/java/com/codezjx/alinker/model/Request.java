@@ -1,0 +1,114 @@
+package com.codezjx.alinker.model;
+
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import com.codezjx.alinker.BaseTypeWrapper;
+import com.codezjx.alinker.SuperParcelable;
+
+import java.lang.reflect.Array;
+import java.util.Arrays;
+
+/**
+ * Created by codezjx on 2017/9/13.<br/>
+ */
+public class Request implements SuperParcelable {
+
+    private String mTargetClass;
+    private String mMethodName;
+    private BaseTypeWrapper[] mArgsWrapper;
+
+    public Request() {
+        
+    }
+
+    public Request(String targetClass, String methodName, BaseTypeWrapper[] argsWrapper) {
+        mTargetClass = targetClass;
+        mMethodName = methodName;
+        mArgsWrapper = argsWrapper;
+    }
+    
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(mTargetClass);
+        dest.writeString(mMethodName);
+        dest.writeParcelableArray(mArgsWrapper, flags);
+    }
+
+    @Override
+    public void readFromParcel(Parcel in) {
+        mTargetClass = in.readString();
+        mMethodName = in.readString();
+        readParcelableArrayFromParcel(in);
+    }
+
+    protected Request(Parcel in) {
+        mTargetClass = in.readString();
+        mMethodName = in.readString();
+        mArgsWrapper = readParcelableArray(getClass().getClassLoader(), BaseTypeWrapper.class, in);
+    }
+
+    private void readParcelableArrayFromParcel(Parcel in) {
+        int N = in.readInt();
+        if (N < 0) {
+            return;
+        }
+        for (int i = 0; i < N; i++) {
+            mArgsWrapper[i].readFromParcel(in);
+        }
+    }
+
+    /**
+     * Code from {@link Parcel}.readParcelableArray(ClassLoader loader, Class<T> clazz), it's a hide method.
+     */
+    @SuppressWarnings("unchecked")
+    private <T extends Parcelable> T[] readParcelableArray(ClassLoader loader, Class<T> clazz, Parcel in) {
+        int N = in.readInt();
+        if (N < 0) {
+            return null;
+        }
+        T[] p = (T[]) Array.newInstance(clazz, N);
+        for (int i = 0; i < N; i++) {
+            p[i] = in.readParcelable(loader);
+        }
+        return p;
+    }
+
+    public static final Creator<Request> CREATOR = new Creator<Request>() {
+        @Override
+        public Request createFromParcel(Parcel source) {
+            return new Request(source);
+        }
+
+        @Override
+        public Request[] newArray(int size) {
+            return new Request[size];
+        }
+    };
+
+    public String getTargetClass() {
+        return mTargetClass;
+    }
+
+    public String getMethodName() {
+        return mMethodName;
+    }
+
+    public BaseTypeWrapper[] getArgsWrapper() {
+        return mArgsWrapper;
+    }
+
+    @Override
+    public String toString() {
+        return "Request{" +
+                "mTargetClass='" + mTargetClass + '\'' +
+                ", mMethodName='" + mMethodName + '\'' +
+                ", mArgsWrapper=" + Arrays.toString(mArgsWrapper) +
+                '}';
+    }
+}
