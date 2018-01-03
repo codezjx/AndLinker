@@ -37,14 +37,18 @@ public class Request implements SuperParcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeString(mTargetClass);
         dest.writeString(mMethodName);
-        dest.writeParcelableArray(mArgsWrapper, flags);
+        if (flags == PARCELABLE_WRITE_RETURN_VALUE) {
+            writeParcelableArrayToParcel(dest, mArgsWrapper, flags);
+        } else {
+            dest.writeParcelableArray(mArgsWrapper, flags);
+        }
     }
 
     @Override
     public void readFromParcel(Parcel in) {
         mTargetClass = in.readString();
         mMethodName = in.readString();
-        readParcelableArrayFromParcel(in);
+        readParcelableArrayFromParcel(in, mArgsWrapper);
     }
 
     protected Request(Parcel in) {
@@ -53,13 +57,25 @@ public class Request implements SuperParcelable {
         mArgsWrapper = readParcelableArray(getClass().getClassLoader(), BaseTypeWrapper.class, in);
     }
 
-    private void readParcelableArrayFromParcel(Parcel in) {
+    private <T extends BaseTypeWrapper> void writeParcelableArrayToParcel(Parcel dest, T[] value, int parcelableFlags) {
+        if (value != null) {
+            int N = value.length;
+            dest.writeInt(N);
+            for (int i = 0; i < N; i++) {
+                value[i].writeToParcel(dest, parcelableFlags);
+            }
+        } else {
+            dest.writeInt(-1);
+        }
+    }
+
+    private <T extends BaseTypeWrapper> void readParcelableArrayFromParcel(Parcel in, T[] value) {
         int N = in.readInt();
         if (N < 0) {
             return;
         }
         for (int i = 0; i < N; i++) {
-            mArgsWrapper[i].readFromParcel(in);
+            value[i].readFromParcel(in);
         }
     }
 
