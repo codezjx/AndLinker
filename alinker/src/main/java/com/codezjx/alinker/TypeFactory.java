@@ -15,7 +15,8 @@ public class TypeFactory {
             new Type.FloatType(), new Type.DoubleType(), new Type.BooleanType(), new Type.CharType(),
             new ArrayType.ByteArrayType(),  new ArrayType.ShortArrayType(),  new ArrayType.IntArrayType(),     new ArrayType.LongArrayType(),
             new ArrayType.FloatArrayType(), new ArrayType.DoubleArrayType(), new ArrayType.BooleanArrayType(), new ArrayType.CharArrayType(),
-            new Type.StringType(), new ArrayType.StringArrayType(), new Type.CharSequenceType(), new ArrayType.CharSequenceArrayType()
+            new Type.StringType(), new ArrayType.StringArrayType(), new Type.CharSequenceType(), new ArrayType.CharSequenceArrayType(),
+            new OutType.ParcelableType(), new ArrayType.ParcelableArrayType(), new OutType.ListType(), new OutType.MapType()
     };
 
     static Type getType(int type) {

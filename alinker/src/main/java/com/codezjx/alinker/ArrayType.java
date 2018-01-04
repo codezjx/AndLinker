@@ -1,6 +1,7 @@
 package com.codezjx.alinker;
 
 import android.os.Parcel;
+import android.os.Parcelable;
 
 /**
  * Created by codezjx on 2017/11/28.<br/>
@@ -267,6 +268,36 @@ public interface ArrayType<T> extends OutType<T> {
         @Override
         public CharSequence[] newInstance(int length) {
             return new CharSequence[length];
+        }
+    }
+
+    final class ParcelableArrayType implements ArrayType<Parcelable[]> {
+
+        @Override
+        public void writeToParcel(Parcel dest, int flags, Parcelable[] val) {
+            dest.writeParcelableArray(val, flags);
+        }
+
+        @Override
+        public Parcelable[] createFromParcel(Parcel in) {
+            return in.readParcelableArray(getClass().getClassLoader());
+        }
+
+        @Override
+        public void readFromParcel(Parcel in, Parcelable[] val) {
+            int N = in.readInt();
+            if (N == val.length) {
+                for (int i = 0; i < N; i++) {
+                    val[i] = in.readParcelable(getClass().getClassLoader());
+                }
+            } else {
+                throw new RuntimeException("bad array lengths");
+            }
+        }
+
+        @Override
+        public Parcelable[] newInstance(int length) {
+            return new Parcelable[length];
         }
     }
     
