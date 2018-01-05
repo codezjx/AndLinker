@@ -17,7 +17,11 @@ public interface OutType<T> extends Type<T> {
 
         @Override
         public void writeToParcel(Parcel dest, int flags, Parcelable val) {
-            dest.writeParcelable(val, flags);
+            if (flags == Parcelable.PARCELABLE_WRITE_RETURN_VALUE) {
+                val.writeToParcel(dest, flags);
+            } else {
+                dest.writeParcelable(val, flags);
+            }
         }
 
         @Override

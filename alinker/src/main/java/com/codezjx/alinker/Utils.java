@@ -158,13 +158,13 @@ public class Utils {
             type = BaseTypeWrapper.TYPE_CHARSEQUENCE;
         } else if (classType == CharSequence[].class) {
             type = BaseTypeWrapper.TYPE_CHARSEQUENCEARRAY;
-        } else if (classType == Parcelable.class) {
+        } else if (Parcelable.class.isAssignableFrom(classType)) {
             type = BaseTypeWrapper.TYPE_PARCELABLE;
-        } else if (classType == Parcelable[].class) {
+        } else if (Parcelable[].class.isAssignableFrom(classType)) {
             type = BaseTypeWrapper.TYPE_PARCELABLEARRAY;
-        } else if (classType == List.class) {
+        } else if (List.class.isAssignableFrom(classType)) {
             type = BaseTypeWrapper.TYPE_LIST;
-        } else if (classType == Map.class) {
+        } else if (Map.class.isAssignableFrom(classType)) {
             type = BaseTypeWrapper.TYPE_MAP;
         } else {
             type = BaseTypeWrapper.TYPE_EMPTY;
