@@ -277,16 +277,27 @@ public interface ArrayType<T> extends OutType<T> {
 
         @Override
         public void writeToParcel(Parcel dest, int flags, Parcelable[] val) {
+            dest.writeString(val.getClass().getComponentType().getName());
             dest.writeParcelableArray(val, flags);
         }
 
         @Override
         public Parcelable[] createFromParcel(Parcel in) {
-            return in.readParcelableArray(getClass().getClassLoader());
+            String componentType = in.readString();
+            Object obj = null;
+            try {
+                Class cls = Class.forName(componentType);
+                obj = createTypedArray(in, cls);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            return (Parcelable[]) obj;
         }
 
         @Override
         public void readFromParcel(Parcel in, Parcelable[] val) {
+            // Just read and do nothing, because we don't need component type here
+            in.readString();
             int N = in.readInt();
             if (N == val.length) {
                 for (int i = 0; i < N; i++) {
@@ -300,17 +311,6 @@ public interface ArrayType<T> extends OutType<T> {
         @Override
         public Parcelable[] newInstance(int length) {
             return new Parcelable[length];
-        }
-
-        public Object createFromComponentType(Parcel in, String componentType) {
-            Object obj = null;
-            try {
-                Class cls = Class.forName(componentType);
-                obj = createTypedArray(in, cls);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            }
-            return obj;
         }
 
         private <T> T[] createTypedArray(Parcel in, Class<T> cls) {

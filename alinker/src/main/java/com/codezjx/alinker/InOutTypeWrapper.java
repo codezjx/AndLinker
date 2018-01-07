@@ -33,9 +33,6 @@ public class InOutTypeWrapper implements BaseTypeWrapper {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeInt(mType);
-        if (mType == BaseTypeWrapper.TYPE_PARCELABLEARRAY) {
-            dest.writeString(mParam.getClass().getComponentType().getName());
-        }
         Type type = TypeFactory.getType(mType);
         type.writeToParcel(dest, flags, mParam);
     }
@@ -43,9 +40,6 @@ public class InOutTypeWrapper implements BaseTypeWrapper {
     @Override
     public void readFromParcel(Parcel in) {
         mType = in.readInt();
-        if (mType == BaseTypeWrapper.TYPE_PARCELABLEARRAY) {
-            in.readString();
-        }
         OutType type = (OutType) TypeFactory.getType(mType);
         type.readFromParcel(in, mParam);
     }
@@ -53,12 +47,7 @@ public class InOutTypeWrapper implements BaseTypeWrapper {
     protected InOutTypeWrapper(Parcel in) {
         mType = in.readInt();
         Type type = TypeFactory.getType(mType);
-        if (mType == BaseTypeWrapper.TYPE_PARCELABLEARRAY) {
-            String componentType = in.readString();
-            mParam = ((ArrayType.ParcelableArrayType) type).createFromComponentType(in, componentType);
-        } else {
-            mParam = type.createFromParcel(in);
-        }
+        mParam = type.createFromParcel(in);
     }
 
     public static final Creator<InOutTypeWrapper> CREATOR = new Creator<InOutTypeWrapper>() {
