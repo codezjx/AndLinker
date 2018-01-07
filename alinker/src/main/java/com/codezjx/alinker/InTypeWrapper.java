@@ -37,6 +37,9 @@ public class InTypeWrapper implements BaseTypeWrapper {
             return;
         }
         dest.writeInt(mType);
+        if (mType == BaseTypeWrapper.TYPE_PARCELABLEARRAY) {
+            dest.writeString(mParam.getClass().getComponentType().getName());
+        }
         Type type = TypeFactory.getType(mType);
         type.writeToParcel(dest, flags, mParam);
     }
@@ -49,7 +52,12 @@ public class InTypeWrapper implements BaseTypeWrapper {
     protected InTypeWrapper(Parcel in) {
         mType = in.readInt();
         Type type = TypeFactory.getType(mType);
-        mParam = type.createFromParcel(in);
+        if (mType == BaseTypeWrapper.TYPE_PARCELABLEARRAY) {
+            String componentType = in.readString();
+            mParam = ((ArrayType.ParcelableArrayType) type).createFromComponentType(in, componentType);
+        } else {
+            mParam = type.createFromParcel(in);
+        }
     }
 
     public static final Creator<InTypeWrapper> CREATOR = new Creator<InTypeWrapper>() {

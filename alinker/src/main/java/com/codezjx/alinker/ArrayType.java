@@ -3,6 +3,8 @@ package com.codezjx.alinker;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.lang.reflect.Array;
+
 /**
  * Created by codezjx on 2017/11/28.<br/>
  */
@@ -298,6 +300,29 @@ public interface ArrayType<T> extends OutType<T> {
         @Override
         public Parcelable[] newInstance(int length) {
             return new Parcelable[length];
+        }
+
+        public Object createFromComponentType(Parcel in, String componentType) {
+            Object obj = null;
+            try {
+                Class cls = Class.forName(componentType);
+                obj = createTypedArray(in, cls);
+            } catch (ClassNotFoundException e) {
+                e.printStackTrace();
+            }
+            return obj;
+        }
+
+        private <T> T[] createTypedArray(Parcel in, Class<T> cls) {
+            int N = in.readInt();
+            if (N < 0) {
+                return null;
+            }
+            T[] arr = (T[]) Array.newInstance(cls, N);
+            for (int i = 0; i < N; i++) {
+                arr[i] = in.readParcelable(cls.getClassLoader());
+            }
+            return arr;
         }
     }
     

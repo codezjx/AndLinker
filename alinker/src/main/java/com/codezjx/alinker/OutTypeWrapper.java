@@ -40,8 +40,13 @@ public class OutTypeWrapper implements BaseTypeWrapper {
         if (flags == PARCELABLE_WRITE_RETURN_VALUE) {
             type.writeToParcel(dest, flags, mParam);
         } else {
-            // array type just write length
-            if (Utils.isArrayType(mType)) {
+            if (mType == BaseTypeWrapper.TYPE_PARCELABLE) {
+                dest.writeString(mParam.getClass().getName());
+            } else if (mType == BaseTypeWrapper.TYPE_PARCELABLEARRAY) {
+                dest.writeInt(Array.getLength(mParam));
+                dest.writeString(mParam.getClass().getComponentType().getName());
+            } else if (Utils.isArrayType(mType)) {
+                // array type just write length
                 dest.writeInt(Array.getLength(mParam));
             }
         }
@@ -56,10 +61,17 @@ public class OutTypeWrapper implements BaseTypeWrapper {
 
     protected OutTypeWrapper(Parcel in) {
         mType = in.readInt();
-        OutType type = (OutType) TypeFactory.getType(mType);
-        if (Utils.isArrayType(mType)) {
+        if (mType == BaseTypeWrapper.TYPE_PARCELABLE) {
+            String clsName = in.readString();
+            mParam = Utils.createObjFromClassName(clsName);
+        } else if (mType == BaseTypeWrapper.TYPE_PARCELABLEARRAY) {
             int length = in.readInt();
-            mParam = ((ArrayType) type).newInstance(length);
+            String componentType = in.readString();
+            mParam = Utils.createArrayFromComponentType(componentType, length);
+        } else if (Utils.isArrayType(mType)) {
+            int length = in.readInt();
+            ArrayType type = (ArrayType) TypeFactory.getType(mType);
+            mParam = type.newInstance(length);
         }
     }
 

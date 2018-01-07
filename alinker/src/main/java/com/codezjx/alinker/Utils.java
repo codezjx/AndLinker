@@ -172,4 +172,29 @@ public class Utils {
         return type;
     }
 
+    static Object createObjFromClassName(String clsName) {
+        Object obj = null;
+        try {
+            obj = Class.forName(clsName).newInstance();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
+
+    static Object createArrayFromComponentType(String componentType, int length) {
+        Object obj = null;
+        try {
+            Class clsType = Class.forName(componentType);
+            obj = Array.newInstance(clsType, length);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        return obj;
+    }
+    
 }
