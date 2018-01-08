@@ -3,6 +3,8 @@ package com.codezjx.alinker;
 import android.os.Parcel;
 
 import java.lang.reflect.Array;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 /**
  * Created by codezjx on 2017/11/30.<br/>
@@ -68,6 +70,10 @@ public class OutTypeWrapper implements BaseTypeWrapper {
             int length = in.readInt();
             String componentType = in.readString();
             mParam = Utils.createArrayFromComponentType(componentType, length);
+        } else if (mType == BaseTypeWrapper.TYPE_LIST) {
+            mParam = new ArrayList();
+        } else if (mType == BaseTypeWrapper.TYPE_MAP) {
+            mParam = new HashMap();
         } else if (Utils.isArrayType(mType)) {
             int length = in.readInt();
             ArrayType type = (ArrayType) TypeFactory.getType(mType);

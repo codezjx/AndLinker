@@ -52,7 +52,14 @@ public interface OutType<T> extends Type<T> {
 
         @Override
         public void readFromParcel(Parcel in, List val) {
-            in.readList(val, getClass().getClassLoader());
+            // Clear the list before read list
+            val.clear();
+            int N = in.readInt();
+            while (N > 0) {
+                Object value = in.readValue(getClass().getClassLoader());
+                val.add(value);
+                N--;
+            }
         }
     }
 
@@ -70,7 +77,16 @@ public interface OutType<T> extends Type<T> {
 
         @Override
         public void readFromParcel(Parcel in, Map val) {
-            in.readMap(val, getClass().getClassLoader());
+            ClassLoader loader = getClass().getClassLoader();
+            // Clear the map before read map
+            val.clear();
+            int N = in.readInt();
+            while (N > 0) {
+                Object key = in.readValue(loader);
+                Object value = in.readValue(loader);
+                val.put(key, value);
+                N--;
+            }
         }
     }
 }
