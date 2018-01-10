@@ -7,7 +7,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * Created by codezjx on 2017/10/14.<br/>
+ * Created by codezjx on 2018/1/10.<br/>
  */
 public class DefaultCallAdapterFactory extends CallAdapter.Factory {
 
@@ -15,14 +15,11 @@ public class DefaultCallAdapterFactory extends CallAdapter.Factory {
 
     @Override
     public CallAdapter<?, ?> get(Type returnType, Annotation[] annotations) {
-        if (getRawType(returnType) != Call.class) {
-            return null;
-        }
-        
-        return new CallAdapter<Object, Call<?>>() {
-            @Override public Call<Object> adapt(Call<Object> call) {
-                // Return as is
-                return call;
+        return new CallAdapter<Object, Object>() {
+            @Override
+            public Object adapt(Call<Object> call) {
+                // Return the result
+                return call.execute();
             }
         };
     }

@@ -94,14 +94,7 @@ public class Linker {
             }
         }
 
-        StringBuilder builder = new StringBuilder("Could not locate call adapter for ")
-                .append(returnType)
-                .append(".\n");
-        builder.append("  Tried:");
-        for (int i = 0, count = mAdapterFactories.size(); i < count; i++) {
-            builder.append("\n   * ").append(mAdapterFactories.get(i).getClass().getName());
-        }
-        throw new IllegalArgumentException(builder.toString());
+        return DefaultCallAdapterFactory.INSTANCE.get(returnType, annotations);
     }
 
     private ServiceConnection createServiceConnection() {
@@ -175,8 +168,6 @@ public class Linker {
         }
 
         public Linker build() {
-            // Add the default Call adapter
-            mAdapterFactories.add(DefaultCallAdapterFactory.INSTANCE);
             return new Linker(mContext, mPackageName, mAdapterFactories);
         }
         

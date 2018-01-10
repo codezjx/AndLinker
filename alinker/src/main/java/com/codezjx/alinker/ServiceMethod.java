@@ -109,9 +109,6 @@ public class ServiceMethod {
                 throw methodError(
                         "Method return type must not include a type variable or wildcard: %s", returnType);
             }
-            if (returnType == void.class) {
-                throw methodError("Service methods cannot return void.");
-            }
             Annotation[] annotations = mMethod.getAnnotations();
             try {
                 //noinspection unchecked
