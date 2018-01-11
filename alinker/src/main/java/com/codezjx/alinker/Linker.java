@@ -38,6 +38,7 @@ public class Linker {
     private Context mContext;
     private String mPackageName;
     private List<CallAdapter.Factory> mAdapterFactories;
+    private Dispatcher mDispatcher;
     private ITransfer mTransferService;
     private ICallback mCallback;
     
@@ -46,6 +47,7 @@ public class Linker {
         mContext = context;
         mPackageName = packageName;
         mAdapterFactories = adapterFactories;
+        mDispatcher = new Dispatcher();
         mServiceConnection = createServiceConnection();
         mCallback = createCallback();
     }
@@ -62,7 +64,7 @@ public class Linker {
                             return method.invoke(this, args);
                         }
                         ServiceMethod serviceMethod = loadServiceMethod(method);
-                        RemoteCall remoteCall = new RemoteCall(mTransferService, serviceMethod, args);
+                        RemoteCall remoteCall = new RemoteCall(mTransferService, serviceMethod, args, mDispatcher);
                         return serviceMethod.getCallAdapter().adapt(remoteCall);
                     }
                 });

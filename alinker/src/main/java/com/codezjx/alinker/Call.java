@@ -7,7 +7,7 @@ public interface Call<T> {
     
     T execute();
 
-    void executeAsync(Callback<T> callback);
+    void enqueue(Callback<T> callback);
 
     boolean isExecuted();
 
