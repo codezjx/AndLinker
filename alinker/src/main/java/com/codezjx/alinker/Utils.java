@@ -116,7 +116,7 @@ public class Utils {
                 || classType == String[].class || classType == CharSequence[].class || classType == Parcelable[].class;
     }
 
-    static int getTypeByClass(Class<?> classType) {
+    public static int getTypeByClass(Class<?> classType) {
         int type;
         if (classType == byte.class || classType == Byte.class) {
             type = BaseTypeWrapper.TYPE_BYTE;

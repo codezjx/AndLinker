@@ -69,9 +69,17 @@ public class Invoker {
         // Cache all annotation method
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods) {
+            // The compiler sometimes creates synthetic bridge methods as part of the
+            // type erasure process. As of JDK8 these methods now include the same
+            // annotations as the original declarations. They should be ignored for
+            // subscribe/produce.
+            if (method.isBridge()) {
+                continue;
+            }
             MethodName methodNameAnnotation = method.getAnnotation(MethodName.class);
             if (methodNameAnnotation != null) {
-                String key = classNameAnnotation.value() + methodNameAnnotation.value();
+                Class<?>[] parameterTypes = method.getParameterTypes();
+                String key = createMethodExecutorKey(classNameAnnotation.value(), methodNameAnnotation.value(), parameterTypes);
                 MethodExecutor executor = new MethodExecutor(target, method);
                 mMethodExecutors.putIfAbsent(key, executor);
             }
@@ -94,7 +102,7 @@ public class Invoker {
                 args[i] = getCallbackProxy(clazz, pid);
             }
         }
-        MethodExecutor executor = getMethodExecutor(request);
+        MethodExecutor executor = getMethodExecutor(request, args);
         return executor.execute(args);
     }
 
@@ -161,8 +169,22 @@ public class Invoker {
         return mClassTypes.get(className);
     }
 
-    private MethodExecutor getMethodExecutor(Request request) {
-        String key = request.getTargetClass() + request.getMethodName();
+    private String createMethodExecutorKey(String clsName, String methodName, Class<?>[] paramTypes) {
+        StringBuilder sb = new StringBuilder();
+        sb.append(clsName);
+        sb.append('-').append(methodName);
+        for (Class<?> paramType : paramTypes) {
+            sb.append('-').append(Utils.getTypeByClass(paramType));
+        }
+        return sb.toString();
+    }
+
+    private MethodExecutor getMethodExecutor(Request request, Object[] args) {
+        Class<?>[] clsArr = new Class<?>[args.length];
+        for (int i = 0; i < args.length; i++) {
+            clsArr[i] = args[i].getClass();
+        }
+        String key = createMethodExecutorKey(request.getTargetClass(), request.getMethodName(), clsArr);
         return mMethodExecutors.get(key);
     }
     
