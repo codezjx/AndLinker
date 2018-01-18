@@ -56,7 +56,17 @@ public class Invoker {
         }
     }
 
-    public void registerObject(Object target) {
+    public void unRegisterClass(Class<?> clazz) {
+        ClassName className = clazz.getAnnotation(ClassName.class);
+        if (className != null) {
+            mClassTypes.remove(className.value());
+        }
+    }
+
+    private void handleObject(Object target, boolean isRegister) {
+        if (target == null) {
+            throw new NullPointerException("Object to (un)register must not be null.");
+        }
         Class<?>[] interfaces = target.getClass().getInterfaces();
         if (interfaces.length != 1) {
             throw new IllegalArgumentException("Remote object must extend just one interface.");
@@ -81,18 +91,26 @@ public class Invoker {
                 String clsName = classNameAnnotation.value();
                 String methodName = methodNameAnnotation.value();
                 String key = createMethodExecutorKey(clsName, methodName);
-                MethodExecutor executor = new MethodExecutor(target, method);
-                MethodExecutor preExecutor = mMethodExecutors.putIfAbsent(key, executor);
-                if (preExecutor != null) {
-                    throw new IllegalStateException("Key conflict with class:" + clsName + " method:" + methodName
-                        + ". Please try another class/method name with annotation @ClassName/@MethodName.");
+                if (isRegister) {
+                    MethodExecutor executor = new MethodExecutor(target, method);
+                    MethodExecutor preExecutor = mMethodExecutors.putIfAbsent(key, executor);
+                    if (preExecutor != null) {
+                        throw new IllegalStateException("Key conflict with class:" + clsName + " method:" + methodName
+                                + ". Please try another class/method name with annotation @ClassName/@MethodName.");
+                    }
+                } else {
+                    mMethodExecutors.remove(key);
                 }
             }
         }
     }
 
-    public void unRegisterObject(Object object) {
-        // TODO
+    public void registerObject(Object target) {
+        handleObject(target, true);
+    }
+
+    public void unRegisterObject(Object target) {
+        handleObject(target, false);
     }
 
     public Response invoke(Request request) {
