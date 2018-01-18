@@ -78,10 +78,15 @@ public class Invoker {
             }
             MethodName methodNameAnnotation = method.getAnnotation(MethodName.class);
             if (methodNameAnnotation != null) {
-                Class<?>[] parameterTypes = method.getParameterTypes();
-                String key = createMethodExecutorKey(classNameAnnotation.value(), methodNameAnnotation.value(), parameterTypes);
+                String clsName = classNameAnnotation.value();
+                String methodName = methodNameAnnotation.value();
+                String key = createMethodExecutorKey(clsName, methodName);
                 MethodExecutor executor = new MethodExecutor(target, method);
-                mMethodExecutors.putIfAbsent(key, executor);
+                MethodExecutor preExecutor = mMethodExecutors.putIfAbsent(key, executor);
+                if (preExecutor != null) {
+                    throw new IllegalStateException("Key conflict with class:" + clsName + " method:" + methodName
+                        + ". Please try another class/method name with annotation @ClassName/@MethodName.");
+                }
             }
         }
     }
@@ -102,7 +107,7 @@ public class Invoker {
                 args[i] = getCallbackProxy(clazz, pid);
             }
         }
-        MethodExecutor executor = getMethodExecutor(request, args);
+        MethodExecutor executor = getMethodExecutor(request);
         return executor.execute(args);
     }
 
@@ -169,22 +174,16 @@ public class Invoker {
         return mClassTypes.get(className);
     }
 
-    private String createMethodExecutorKey(String clsName, String methodName, Class<?>[] paramTypes) {
+    private String createMethodExecutorKey(String clsName, String methodName) {
         StringBuilder sb = new StringBuilder();
-        sb.append(clsName);
-        sb.append('-').append(methodName);
-        for (Class<?> paramType : paramTypes) {
-            sb.append('-').append(Utils.getTypeByClass(paramType));
-        }
+        sb.append(clsName)
+            .append('-')
+            .append(methodName);
         return sb.toString();
     }
 
-    private MethodExecutor getMethodExecutor(Request request, Object[] args) {
-        Class<?>[] clsArr = new Class<?>[args.length];
-        for (int i = 0; i < args.length; i++) {
-            clsArr[i] = args[i].getClass();
-        }
-        String key = createMethodExecutorKey(request.getTargetClass(), request.getMethodName(), clsArr);
+    private MethodExecutor getMethodExecutor(Request request) {
+        String key = createMethodExecutorKey(request.getTargetClass(), request.getMethodName());
         return mMethodExecutors.get(key);
     }
     
