@@ -100,7 +100,7 @@ public class Utils {
     }
 
     static boolean canOnlyBeInType(Class<?> classType) {
-        return classType.isPrimitive() || classType == String.class || classType == CharSequence.class;
+        return isPrimitiveType(classType) || classType == String.class || classType == CharSequence.class;
     }
 
     static boolean isArrayType(int type) {
@@ -108,6 +108,12 @@ public class Utils {
                 || type == BaseTypeWrapper.TYPE_LONGARRAY || type == BaseTypeWrapper.TYPE_FLOATARRAY || type == BaseTypeWrapper.TYPE_DOUBLEARRAY
                 || type == BaseTypeWrapper.TYPE_BOOLEANARRAY || type == BaseTypeWrapper.TYPE_CHARARRAY || type == BaseTypeWrapper.TYPE_STRINGARRAY
                 || type == BaseTypeWrapper.TYPE_CHARSEQUENCEARRAY || type == BaseTypeWrapper.TYPE_PARCELABLEARRAY;
+    }
+
+    static boolean isPrimitiveType(Class<?> classType) {
+        return classType.isPrimitive() || classType == Byte.class || classType == Short.class
+                || classType == Integer.class || classType == Long.class || classType == Float.class
+                || classType == Double.class || classType == Boolean.class || classType == Character.class;
     }
 
     static boolean isArrayType(Class<?> classType) {

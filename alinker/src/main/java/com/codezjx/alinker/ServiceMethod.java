@@ -86,10 +86,6 @@ public class ServiceMethod {
                 }
                 
                 Annotation[] parameterAnnotations = mParameterAnnotationsArray[p];
-                if (parameterAnnotations == null) {
-                    throw parameterError(p, "No parameter annotation found.");
-                }
-
                 mParameterHandlers[p] = parseParameter(p, parameterType, parameterAnnotations);
             }
             
@@ -126,6 +122,9 @@ public class ServiceMethod {
 
         private ParameterHandler<?>  parseParameter(int p, Type parameterType, Annotation[] annotations) {
             Class<?> rawParameterType = Utils.getRawType(parameterType);
+            if (annotations == null || annotations.length == 0) {
+                return new ParameterHandler.DefaultParameterHandler<>(rawParameterType);
+            }
             for (Annotation annotation : annotations) {
                 if (annotation instanceof Callback) {
                     return new ParameterHandler.CallbackHandler<>(rawParameterType);

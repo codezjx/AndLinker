@@ -80,7 +80,7 @@ public interface ParameterHandler<T> {
                 InTypeWrapper wrapper = new InTypeWrapper(value, mParamType);
                 builder.applyWrapper(index, wrapper);
             } else {
-                throw new IllegalArgumentException("For any not primitive type, you must specify @In, @Out or @Inout");
+                throw new IllegalArgumentException("Parameter type '" + mParamType.getSimpleName() + "' can be an out type, so you must declare it as @In, @Out or @Inout.");
             }
         }
     }
