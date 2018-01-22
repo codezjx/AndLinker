@@ -5,6 +5,7 @@ import com.codezjx.alinker.annotation.ClassName;
 import com.codezjx.alinker.annotation.In;
 import com.codezjx.alinker.annotation.Inout;
 import com.codezjx.alinker.annotation.MethodName;
+import com.codezjx.alinker.annotation.OneWay;
 import com.codezjx.alinker.annotation.Out;
 
 import java.lang.annotation.Annotation;
@@ -22,12 +23,14 @@ public class ServiceMethod {
     private CallAdapter mCallAdapter;
     private String mClassName;
     private String mMethodName;
+    private boolean mOneWay; 
     private ParameterHandler<?>[] mParameterHandlers;
 
     public ServiceMethod(Builder builder) {
         mCallAdapter = builder.mCallAdapter;
         mClassName = builder.mClassName;
         mMethodName = builder.mMethodName;
+        mOneWay = builder.mOneWay;
         mParameterHandlers = builder.mParameterHandlers;
     }
 
@@ -41,6 +44,10 @@ public class ServiceMethod {
 
     public String getMethodName() {
         return mMethodName;
+    }
+
+    public boolean isOneWay() {
+        return mOneWay;
     }
 
     public ParameterHandler<?>[] getParameterHandlers() {
@@ -58,6 +65,7 @@ public class ServiceMethod {
         private CallAdapter mCallAdapter;
         private String mClassName = "";
         private String mMethodName = "";
+        private boolean mOneWay = false;
         private ParameterHandler<?>[] mParameterHandlers;
 
         public Builder(Linker linker, Method method) {
@@ -117,6 +125,8 @@ public class ServiceMethod {
         private void parseMethodAnnotation(Annotation annotation) {
             if (annotation instanceof MethodName) {
                 mMethodName = ((MethodName) annotation).value();
+            } else if (annotation instanceof OneWay) {
+                mOneWay = true;
             }
         }
 

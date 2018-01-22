@@ -1,5 +1,7 @@
 package com.codezjx.alinker;
 
+import android.os.IBinder;
+
 public interface ITransfer extends android.os.IInterface {
     /**
      * Local-side IPC implementation stub class.
@@ -50,6 +52,10 @@ public interface ITransfer extends android.os.IInterface {
                         _arg0 = null;
                     }
                     com.codezjx.alinker.model.Response _result = this.execute(_arg0);
+                    if ((flags & IBinder.FLAG_ONEWAY) != 0) {
+                        // One-way mode just execute and return directly.
+                        return true;
+                    }
                     reply.writeNoException();
                     if ((_result != null)) {
                         reply.writeInt(1);
@@ -113,6 +119,11 @@ public interface ITransfer extends android.os.IInterface {
                         request.writeToParcel(_data, 0);
                     } else {
                         _data.writeInt(0);
+                    }
+                    // One-way mode just transact and return directly.
+                    if (request != null && request.isOneWay()) {
+                        mRemote.transact(Stub.TRANSACTION_execute, _data, null, IBinder.FLAG_ONEWAY);
+                        return null;
                     }
                     mRemote.transact(Stub.TRANSACTION_execute, _data, _reply, 0);
                     _reply.readException();

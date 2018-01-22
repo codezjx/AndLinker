@@ -17,15 +17,22 @@ public class Request implements SuperParcelable {
     private String mTargetClass;
     private String mMethodName;
     private BaseTypeWrapper[] mArgsWrapper;
+    // This field use for client slide only
+    private boolean mOneWay = false;
 
     public Request() {
         
     }
 
     public Request(String targetClass, String methodName, BaseTypeWrapper[] argsWrapper) {
+        this(targetClass, methodName, argsWrapper, false);
+    }
+
+    public Request(String targetClass, String methodName, BaseTypeWrapper[] argsWrapper, boolean oneWay) {
         mTargetClass = targetClass;
         mMethodName = methodName;
         mArgsWrapper = argsWrapper;
+        mOneWay = oneWay;
     }
     
     @Override
@@ -113,6 +120,10 @@ public class Request implements SuperParcelable {
 
     public String getMethodName() {
         return mMethodName;
+    }
+
+    public boolean isOneWay() {
+        return mOneWay;
     }
 
     public BaseTypeWrapper[] getArgsWrapper() {

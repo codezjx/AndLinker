@@ -38,12 +38,16 @@ public class RemoteCall implements Call<Object> {
                     + ") doesn't match expected count (" + handlers.length + ")");
         }
 
-        RequestBuilder requestBuilder = new RequestBuilder(mServiceMethod.getClassName(), mServiceMethod.getMethodName(), argumentCount);
+        RequestBuilder requestBuilder = new RequestBuilder(mServiceMethod.getClassName(), mServiceMethod.getMethodName(), argumentCount, mServiceMethod.isOneWay());
         for (int p = 0; p < argumentCount; p++) {
             handlers[p].apply(requestBuilder, mArgs[p], p);
         }
         
         Response response = mTransferService.execute(requestBuilder.build());
+        // May return null in one-way mode.
+        if (response == null) {
+            return null;
+        }
         Log.d(TAG, "Response from server, code:" + response.getStatusCode() + " msg:" + response.getStatusMessage());
         return response.getResult();
     }
