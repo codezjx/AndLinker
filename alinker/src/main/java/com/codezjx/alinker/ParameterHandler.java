@@ -1,7 +1,5 @@
 package com.codezjx.alinker;
 
-import android.util.Log;
-
 import com.codezjx.alinker.annotation.ClassName;
 import com.codezjx.alinker.annotation.In;
 import com.codezjx.alinker.annotation.Inout;
@@ -26,7 +24,7 @@ public interface ParameterHandler<T> {
 
         @Override
         public void apply(RequestBuilder builder, T value, int index) {
-            Log.d("CallbackHandler", "ParameterHandler mParamType:" + mParamType + " value:" + value);
+            Logger.d("CallbackHandler", "ParameterHandler mParamType:" + mParamType + " value:" + value);
             ClassName annotation = mParamType.getAnnotation(ClassName.class);
             String className = (annotation != null) ? annotation.value() : "";
             if (StringUtils.isBlank(className)) {
@@ -50,7 +48,7 @@ public interface ParameterHandler<T> {
 
         @Override
         public void apply(RequestBuilder builder, T value, int index) {
-            Log.d("ParamDirectionHandler", " mParamType:" + mParamType + " value:" + value + " index:" + index);
+            Logger.d("ParamDirectionHandler", " mParamType:" + mParamType + " value:" + value + " index:" + index);
             if (Utils.canOnlyBeInType(mParamType) && !(mAnnotation instanceof In)) {
                 throw new IllegalArgumentException("Primitives are in by default, and cannot be otherwise.");
             }

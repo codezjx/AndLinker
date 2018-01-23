@@ -6,7 +6,6 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.IBinder;
 import android.os.RemoteException;
-import android.util.Log;
 
 import com.codezjx.alinker.adapter.DefaultCallAdapterFactory;
 import com.codezjx.alinker.invoker.Invoker;
@@ -127,7 +126,7 @@ public class Linker {
         return new ICallback.Stub() {
             @Override
             public Response callback(Request request) throws RemoteException {
-                Log.d(TAG, "Receive callback in client:" + request.toString());
+                Logger.d(TAG, "Receive callback in client:" + request.toString());
                 return mInvoker.invoke(request);
             }
         };

@@ -7,7 +7,6 @@ import android.os.IBinder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
-import android.util.Log;
 
 import com.codezjx.alinker.invoker.Invoker;
 import com.codezjx.alinker.model.Request;
@@ -33,17 +32,17 @@ public class LocalService extends Service {
         @Override
         public Response execute(Request request) throws RemoteException {
             for (BaseTypeWrapper wrapper : request.getArgsWrapper()) {
-                Log.d(TAG, "Receive param, value:" + wrapper.getParam()
+                Logger.d(TAG, "Receive param, value:" + wrapper.getParam()
                         + " type:" + (wrapper.getParam() != null ? wrapper.getParam().getClass() : "null"));
             }
-            Log.d(TAG, "Receive request:" + request.getMethodName());
+            Logger.d(TAG, "Receive request:" + request.getMethodName());
             return mInvoker.invoke(request);
         }
 
         @Override
         public void register(ICallback callback) throws RemoteException {
             int pid = Binder.getCallingPid();
-            Log.d(TAG, "register callback:" + callback + " pid:" + pid);
+            Logger.d(TAG, "register callback:" + callback + " pid:" + pid);
             if (callback != null) {
                 mCallbackList.register(callback, pid);
             }
@@ -52,7 +51,7 @@ public class LocalService extends Service {
         @Override
         public void unRegister(ICallback callback) throws RemoteException {
             int pid = Binder.getCallingPid();
-            Log.d(TAG, "unRegister callback:" + callback + " pid:" + pid);
+            Logger.d(TAG, "unRegister callback:" + callback + " pid:" + pid);
             if (callback != null) {
                 mCallbackList.unregister(callback);
             }

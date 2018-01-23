@@ -1,7 +1,6 @@
 package com.codezjx.alinker;
 
 import android.os.RemoteException;
-import android.util.Log;
 
 import com.codezjx.alinker.model.Response;
 
@@ -48,7 +47,7 @@ public class RemoteCall implements Call<Object> {
         if (response == null) {
             return null;
         }
-        Log.d(TAG, "Response from server, code:" + response.getStatusCode() + " msg:" + response.getStatusMessage());
+        Logger.d(TAG, "Response from server, code:" + response.getStatusCode() + " msg:" + response.getStatusMessage());
         return response.getResult();
     }
 
@@ -56,7 +55,7 @@ public class RemoteCall implements Call<Object> {
     public Object execute() {
         checkExecuted();
         if (mCanceled) {
-            Log.w(TAG, "Already canceled");
+            Logger.w(TAG, "Already canceled");
             return null;
         }
         Object result = null;
@@ -73,7 +72,7 @@ public class RemoteCall implements Call<Object> {
         checkNotNull(callback, "callback == null");
         checkExecuted();
         if (mCanceled) {
-            Log.w(TAG, "Already canceled");
+            Logger.w(TAG, "Already canceled");
             return;
         }
         

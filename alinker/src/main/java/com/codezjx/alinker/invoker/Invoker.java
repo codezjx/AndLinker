@@ -3,12 +3,12 @@ package com.codezjx.alinker.invoker;
 import android.os.Binder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
-import android.util.Log;
 
 import com.codezjx.alinker.BaseTypeWrapper;
 import com.codezjx.alinker.CallbackTypeWrapper;
 import com.codezjx.alinker.ICallback;
 import com.codezjx.alinker.InTypeWrapper;
+import com.codezjx.alinker.Logger;
 import com.codezjx.alinker.Utils;
 import com.codezjx.alinker.annotation.ClassName;
 import com.codezjx.alinker.annotation.MethodName;
@@ -149,9 +149,9 @@ public class Invoker {
                                     Request request = createCallbackRequest(parseClassName(service), parseMethodName(method), args);
                                     Response response = mCallbackList.getBroadcastItem(i).callback(request);
                                     result = response.getResult();
-                                    Log.d(TAG, "Execute remote callback:" + response.toString());
+                                    Logger.d(TAG, "Execute remote callback:" + response.toString());
                                 } catch (RemoteException e) {
-                                    Log.e(TAG, "Error when execute callback!", e);
+                                    Logger.e(TAG, "Error when execute callback!", e);
                                 }
                                 break;
                             }
