@@ -30,14 +30,22 @@ class MethodExecutor {
 
     public Response execute(Object[] args) {
         Object result = null;
+        int statusCode = Response.STATUS_CODE_SUCCESS;
+        String resultMsg = String.format("Call method '%s' successfully!", mMethod.getName());
+        Throwable throwable = null;
         try {
             result = mMethod.invoke(mTarget, args);
         } catch (IllegalAccessException e) {
-            e.printStackTrace();
+            statusCode = Response.STATUS_CODE_ILLEGAL_ACCESS;
+            throwable = e;
         } catch (InvocationTargetException e) {
-            e.printStackTrace();
+            statusCode = Response.STATUS_CODE_INVOCATION_FAIL;
+            throwable = e;
         }
-        return new Response(0, "Success:" + mMethod.getName(), result);
+        if (throwable != null) {
+            resultMsg = "Exception occur when execute method:" + mMethod.getName() + '\n' + throwable.getMessage();
+        }
+        return new Response(statusCode, resultMsg, result);
     }
     
 }

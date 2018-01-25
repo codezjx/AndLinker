@@ -47,7 +47,9 @@ public class RemoteCall implements Call<Object> {
         if (response == null) {
             return null;
         }
-        Logger.d(TAG, "Response from server, code:" + response.getStatusCode() + " msg:" + response.getStatusMessage());
+        if (response.getStatusCode() != Response.STATUS_CODE_SUCCESS) {
+            Logger.e(TAG, "Execute remote call fail: " + response.toString());
+        }
         return response.getResult();
     }
 

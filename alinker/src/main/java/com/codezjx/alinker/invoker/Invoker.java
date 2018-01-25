@@ -126,6 +126,10 @@ public class Invoker {
             }
         }
         MethodExecutor executor = getMethodExecutor(request);
+        if (executor == null) {
+            String errMsg = String.format("The method '%s' you call was not exist!", request.getMethodName());
+            return new Response(Response.STATUS_CODE_NOT_FOUND, errMsg, null);
+        }
         return executor.execute(args);
     }
 
@@ -149,7 +153,9 @@ public class Invoker {
                                     Request request = createCallbackRequest(parseClassName(service), parseMethodName(method), args);
                                     Response response = mCallbackList.getBroadcastItem(i).callback(request);
                                     result = response.getResult();
-                                    Logger.d(TAG, "Execute remote callback:" + response.toString());
+                                    if (response.getStatusCode() != Response.STATUS_CODE_SUCCESS) {
+                                        Logger.e(TAG, "Execute remote callback fail: " + response.toString());
+                                    }
                                 } catch (RemoteException e) {
                                     Logger.e(TAG, "Error when execute callback!", e);
                                 }

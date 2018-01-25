@@ -8,6 +8,11 @@ import android.os.Parcelable;
  */
 public class Response implements Parcelable {
     
+    public static final int STATUS_CODE_SUCCESS = 200;
+    public static final int STATUS_CODE_ILLEGAL_ACCESS = 400;
+    public static final int STATUS_CODE_INVOCATION_FAIL = 401;
+    public static final int STATUS_CODE_NOT_FOUND = 404;
+    
     private int mStatusCode;
     private String mStatusMessage;
     private Object mResult;
