@@ -1,10 +1,7 @@
-package com.codezjx.alinker.model;
+package com.codezjx.alinker;
 
 import android.os.Parcel;
 import android.os.Parcelable;
-
-import com.codezjx.alinker.BaseTypeWrapper;
-import com.codezjx.alinker.SuperParcelable;
 
 import java.lang.reflect.Array;
 import java.util.Arrays;
@@ -12,7 +9,7 @@ import java.util.Arrays;
 /**
  * Created by codezjx on 2017/9/13.<br/>
  */
-public class Request implements SuperParcelable {
+class Request implements SuperParcelable {
 
     private String mTargetClass;
     private String mMethodName;

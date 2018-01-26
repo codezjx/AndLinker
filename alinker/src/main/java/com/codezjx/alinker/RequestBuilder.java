@@ -1,7 +1,5 @@
 package com.codezjx.alinker;
 
-import com.codezjx.alinker.model.Request;
-
 /**
  * Created by codezjx on 2017/11/5.<br/>
  */

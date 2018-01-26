@@ -1,19 +1,11 @@
-package com.codezjx.alinker.invoker;
+package com.codezjx.alinker;
 
 import android.os.Binder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 
-import com.codezjx.alinker.BaseTypeWrapper;
-import com.codezjx.alinker.CallbackTypeWrapper;
-import com.codezjx.alinker.ICallback;
-import com.codezjx.alinker.InTypeWrapper;
-import com.codezjx.alinker.Logger;
-import com.codezjx.alinker.Utils;
 import com.codezjx.alinker.annotation.ClassName;
 import com.codezjx.alinker.annotation.MethodName;
-import com.codezjx.alinker.model.Request;
-import com.codezjx.alinker.model.Response;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;

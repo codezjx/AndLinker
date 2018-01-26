@@ -2,8 +2,6 @@ package com.codezjx.alinker;
 
 import android.os.RemoteException;
 
-import com.codezjx.alinker.model.Response;
-
 import static com.codezjx.alinker.Utils.checkNotNull;
 
 /**

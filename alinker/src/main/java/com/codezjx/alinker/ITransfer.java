@@ -45,13 +45,13 @@ public interface ITransfer extends android.os.IInterface {
                 }
                 case TRANSACTION_execute: {
                     data.enforceInterface(DESCRIPTOR);
-                    com.codezjx.alinker.model.Request _arg0;
+                    Request _arg0;
                     if ((0 != data.readInt())) {
-                        _arg0 = com.codezjx.alinker.model.Request.CREATOR.createFromParcel(data);
+                        _arg0 = Request.CREATOR.createFromParcel(data);
                     } else {
                         _arg0 = null;
                     }
-                    com.codezjx.alinker.model.Response _result = this.execute(_arg0);
+                    Response _result = this.execute(_arg0);
                     if ((flags & IBinder.FLAG_ONEWAY) != 0) {
                         // One-way mode just execute and return directly.
                         return true;
@@ -108,10 +108,10 @@ public interface ITransfer extends android.os.IInterface {
             }
 
             @Override
-            public com.codezjx.alinker.model.Response execute(com.codezjx.alinker.model.Request request) throws android.os.RemoteException {
+            public Response execute(Request request) throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
-                com.codezjx.alinker.model.Response _result;
+                Response _result;
                 try {
                     _data.writeInterfaceToken(DESCRIPTOR);
                     if ((request != null)) {
@@ -128,7 +128,7 @@ public interface ITransfer extends android.os.IInterface {
                     mRemote.transact(Stub.TRANSACTION_execute, _data, _reply, 0);
                     _reply.readException();
                     if ((0 != _reply.readInt())) {
-                        _result = com.codezjx.alinker.model.Response.CREATOR.createFromParcel(_reply);
+                        _result = Response.CREATOR.createFromParcel(_reply);
                     } else {
                         _result = null;
                     }
@@ -178,7 +178,7 @@ public interface ITransfer extends android.os.IInterface {
         static final int TRANSACTION_unRegister = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
     }
 
-    public com.codezjx.alinker.model.Response execute(com.codezjx.alinker.model.Request request) throws android.os.RemoteException;
+    public Response execute(Request request) throws android.os.RemoteException;
 
     public void register(ICallback callback) throws android.os.RemoteException;
 

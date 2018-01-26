@@ -1,6 +1,5 @@
-package com.codezjx.alinker.invoker;
+package com.codezjx.alinker;
 
-import com.codezjx.alinker.model.Response;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;

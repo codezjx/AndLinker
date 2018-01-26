@@ -1,4 +1,4 @@
-package com.codezjx.alinker.model;
+package com.codezjx.alinker;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -6,7 +6,7 @@ import android.os.Parcelable;
 /**
  * Created by codezjx on 2017/9/13.<br/>
  */
-public class Response implements Parcelable {
+class Response implements Parcelable {
     
     public static final int STATUS_CODE_SUCCESS = 200;
     public static final int STATUS_CODE_ILLEGAL_ACCESS = 400;

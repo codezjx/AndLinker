@@ -8,10 +8,6 @@ import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 import android.support.annotation.Nullable;
 
-import com.codezjx.alinker.invoker.Invoker;
-import com.codezjx.alinker.model.Request;
-import com.codezjx.alinker.model.Response;
-
 /**
  * Created by codezjx on 2017/9/13.<br/>
  */

@@ -43,13 +43,13 @@ public interface ICallback extends android.os.IInterface {
                 }
                 case TRANSACTION_callback: {
                     data.enforceInterface(DESCRIPTOR);
-                    com.codezjx.alinker.model.Request _arg0;
+                    Request _arg0;
                     if ((0 != data.readInt())) {
-                        _arg0 = com.codezjx.alinker.model.Request.CREATOR.createFromParcel(data);
+                        _arg0 = Request.CREATOR.createFromParcel(data);
                     } else {
                         _arg0 = null;
                     }
-                    com.codezjx.alinker.model.Response _result = this.callback(_arg0);
+                    Response _result = this.callback(_arg0);
                     reply.writeNoException();
                     if ((_result != null)) {
                         reply.writeInt(1);
@@ -80,10 +80,10 @@ public interface ICallback extends android.os.IInterface {
             }
 
             @Override
-            public com.codezjx.alinker.model.Response callback(com.codezjx.alinker.model.Request request) throws android.os.RemoteException {
+            public Response callback(Request request) throws android.os.RemoteException {
                 android.os.Parcel _data = android.os.Parcel.obtain();
                 android.os.Parcel _reply = android.os.Parcel.obtain();
-                com.codezjx.alinker.model.Response _result;
+                Response _result;
                 try {
                     _data.writeInterfaceToken(DESCRIPTOR);
                     if ((request != null)) {
@@ -95,7 +95,7 @@ public interface ICallback extends android.os.IInterface {
                     mRemote.transact(Stub.TRANSACTION_callback, _data, _reply, 0);
                     _reply.readException();
                     if ((0 != _reply.readInt())) {
-                        _result = com.codezjx.alinker.model.Response.CREATOR.createFromParcel(_reply);
+                        _result = Response.CREATOR.createFromParcel(_reply);
                     } else {
                         _result = null;
                     }
@@ -110,5 +110,5 @@ public interface ICallback extends android.os.IInterface {
         static final int TRANSACTION_callback = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
     }
 
-    public com.codezjx.alinker.model.Response callback(com.codezjx.alinker.model.Request request) throws android.os.RemoteException;
+    public Response callback(Request request) throws android.os.RemoteException;
 }
