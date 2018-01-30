@@ -18,27 +18,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class Invoker {
     
     private static final String TAG = "Invoker";
-    private static volatile Invoker sInstance;
 
     private final ConcurrentHashMap<String, Class<?>> mClassTypes;
     private final ConcurrentHashMap<String, MethodExecutor> mMethodExecutors;
     private final RemoteCallbackList<ICallback> mCallbackList;
     
-    private Invoker() {
+    public Invoker() {
         mClassTypes = new ConcurrentHashMap<String, Class<?>>();
         mMethodExecutors = new ConcurrentHashMap<String, MethodExecutor>();
         mCallbackList = new RemoteCallbackList<ICallback>();
-    }
-    
-    public static Invoker getInstance() {
-        if (sInstance == null) {
-            synchronized (Invoker.class) {
-                if (sInstance == null) {
-                    sInstance = new Invoker();
-                }
-            }
-        }
-        return sInstance;
     }
 
     public void registerClass(Class<?> clazz) {
@@ -105,7 +93,7 @@ public class Invoker {
         handleObject(target, false);
     }
 
-    public Response invoke(Request request) {
+    Response invoke(Request request) {
         BaseTypeWrapper[] wrappers = request.getArgsWrapper();
         Object[] args = new Object[wrappers.length];
         for (int i = 0; i < wrappers.length; i++) {
@@ -125,7 +113,7 @@ public class Invoker {
         return executor.execute(args);
     }
 
-    public RemoteCallbackList<ICallback> getCallbackList() {
+    RemoteCallbackList<ICallback> getCallbackList() {
         return mCallbackList;
     }
 

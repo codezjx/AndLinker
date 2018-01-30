@@ -26,7 +26,7 @@ import static com.codezjx.andlinker.Utils.checkNotNull;
  */
 public class AndLinker {
     
-    private static final String TAG = "RMessenger";
+    private static final String TAG = "AndLinker";
 
     private final Map<Method, ServiceMethod> serviceMethodCache = new ConcurrentHashMap<>();
     private ServiceConnection mServiceConnection;
@@ -38,10 +38,10 @@ public class AndLinker {
     private ITransfer mTransferService;
     private ICallback mCallback;
     
-    private AndLinker(Context context, String packageName, List<CallAdapter.Factory> adapterFactories) {
-        mInvoker = Invoker.getInstance();
+    private AndLinker(Context context, String packageName, Invoker invoker, List<CallAdapter.Factory> adapterFactories) {
         mContext = context;
         mPackageName = packageName;
+        mInvoker = invoker;
         mAdapterFactories = adapterFactories;
         mDispatcher = new Dispatcher();
         mServiceConnection = createServiceConnection();
@@ -66,13 +66,8 @@ public class AndLinker {
                 });
     }
 
-    public void bind() {
-        bind(null);
-    }
-
-    public void bind(Class<? extends LocalService> service) {
+    public void bind(String serviceName) {
         Intent intent = new Intent();
-        String serviceName = (service != null) ? service.getName() : LocalService.class.getName();
         intent.setClassName(mPackageName, serviceName);
         mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
@@ -150,6 +145,7 @@ public class AndLinker {
         private Context mContext;
         private String mPackageName;
         private List<CallAdapter.Factory> mAdapterFactories = new ArrayList<>();
+        private Invoker mInvoker;
         
         public Builder(Context context) {
             mContext = context;
@@ -160,13 +156,18 @@ public class AndLinker {
             return this;
         }
 
+        public Builder invoker(Invoker invoker) {
+            mInvoker = invoker;
+            return this;
+        }
+
         public Builder addCallAdapterFactory(CallAdapter.Factory factory) {
             mAdapterFactories.add(checkNotNull(factory, "factory == null"));
             return this;
         }
 
         public AndLinker build() {
-            return new AndLinker(mContext, mPackageName, mAdapterFactories);
+            return new AndLinker(mContext, mPackageName, mInvoker, mAdapterFactories);
         }
         
     }
