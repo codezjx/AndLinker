@@ -27,7 +27,7 @@ public interface ParameterHandler<T> {
             Logger.d("CallbackHandler", "ParameterHandler mParamType:" + mParamType + " value:" + value);
             ClassName annotation = mParamType.getAnnotation(ClassName.class);
             String className = (annotation != null) ? annotation.value() : "";
-            if (StringUtils.isBlank(className)) {
+            if (Utils.isStringBlank(className)) {
                 throw new IllegalArgumentException("Callback type must provide @ClassName");
             }
             CallbackTypeWrapper wrapper = new CallbackTypeWrapper(className);

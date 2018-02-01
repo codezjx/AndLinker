@@ -33,14 +33,18 @@ public class AndLinker {
     private Invoker mInvoker;
     private Context mContext;
     private String mPackageName;
+    private String mAction;
+    private String mClassName;
     private List<CallAdapter.Factory> mAdapterFactories;
     private Dispatcher mDispatcher;
     private ITransfer mTransferService;
     private ICallback mCallback;
     
-    private AndLinker(Context context, String packageName, Invoker invoker, List<CallAdapter.Factory> adapterFactories) {
+    private AndLinker(Context context, String packageName, String action, String className, Invoker invoker, List<CallAdapter.Factory> adapterFactories) {
         mContext = context;
         mPackageName = packageName;
+        mAction = action;
+        mClassName = className;
         mInvoker = invoker;
         mAdapterFactories = adapterFactories;
         mDispatcher = new Dispatcher();
@@ -66,9 +70,15 @@ public class AndLinker {
                 });
     }
 
-    public void bind(String serviceName) {
+    public void bind() {
         Intent intent = new Intent();
-        intent.setClassName(mPackageName, serviceName);
+        if (!Utils.isStringBlank(mAction)) {
+            intent.setAction(mAction);
+        } else if (!Utils.isStringBlank(mClassName)) {
+            intent.setClassName(mPackageName, mClassName);
+        }
+        // After android 5.0+, service Intent must be explicit.
+        intent.setPackage(mPackageName);
         mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
     
@@ -144,6 +154,8 @@ public class AndLinker {
         
         private Context mContext;
         private String mPackageName;
+        private String mAction;
+        private String mClassName;
         private List<CallAdapter.Factory> mAdapterFactories = new ArrayList<>();
         private Invoker mInvoker;
         
@@ -153,6 +165,16 @@ public class AndLinker {
 
         public Builder packageName(String packageName) {
             mPackageName = packageName;
+            return this;
+        }
+
+        public Builder action(String action) {
+            mAction = action;
+            return this;
+        }
+
+        public Builder className(String className) {
+            mClassName = className;
             return this;
         }
 
@@ -167,7 +189,13 @@ public class AndLinker {
         }
 
         public AndLinker build() {
-            return new AndLinker(mContext, mPackageName, mInvoker, mAdapterFactories);
+            if (Utils.isStringBlank(mPackageName)) {
+                throw new IllegalStateException("Package name required.");
+            }
+            if (Utils.isStringBlank(mAction) && Utils.isStringBlank(mClassName)) {
+                throw new IllegalStateException("You must set one of the action or className.");
+            }
+            return new AndLinker(mContext, mPackageName, mAction, mClassName, mInvoker, mAdapterFactories);
         }
         
     }

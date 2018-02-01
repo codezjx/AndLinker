@@ -202,5 +202,9 @@ public class Utils {
         }
         return obj;
     }
+
+    static boolean isStringBlank(String str) {
+        return str == null || str.trim().length() == 0;
+    }
     
 }
