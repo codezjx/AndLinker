@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by codezjx on 2017/10/3.<br/>
  */
-public class Invoker {
+class Invoker {
     
     private static final String TAG = "Invoker";
 
@@ -23,20 +23,20 @@ public class Invoker {
     private final ConcurrentHashMap<String, MethodExecutor> mMethodExecutors;
     private final RemoteCallbackList<ICallback> mCallbackList;
     
-    public Invoker() {
+    Invoker() {
         mClassTypes = new ConcurrentHashMap<String, Class<?>>();
         mMethodExecutors = new ConcurrentHashMap<String, MethodExecutor>();
         mCallbackList = new RemoteCallbackList<ICallback>();
     }
 
-    public void registerClass(Class<?> clazz) {
+    void registerClass(Class<?> clazz) {
         ClassName className = clazz.getAnnotation(ClassName.class);
         if (className != null) {
             mClassTypes.putIfAbsent(className.value(), clazz);
         }
     }
 
-    public void unRegisterClass(Class<?> clazz) {
+    void unRegisterClass(Class<?> clazz) {
         ClassName className = clazz.getAnnotation(ClassName.class);
         if (className != null) {
             mClassTypes.remove(className.value());
@@ -85,11 +85,11 @@ public class Invoker {
         }
     }
 
-    public void registerObject(Object target) {
+    void registerObject(Object target) {
         handleObject(target, true);
     }
 
-    public void unRegisterObject(Object target) {
+    void unRegisterObject(Object target) {
         handleObject(target, false);
     }
 

@@ -13,9 +13,25 @@ public class LinkerBinder extends ITransfer.Stub {
     private RemoteCallbackList<ICallback> mCallbackList;
     private Invoker mInvoker;
 
-    public LinkerBinder(Invoker invoker) {
-        mInvoker = invoker;
-        mCallbackList = invoker.getCallbackList();
+    public LinkerBinder() {
+        mInvoker = new Invoker();
+        mCallbackList = mInvoker.getCallbackList();
+    }
+
+    public void registerClass(Class<?> clazz) {
+        mInvoker.registerClass(clazz);
+    }
+
+    public void unRegisterClass(Class<?> clazz) {
+        mInvoker.unRegisterClass(clazz);
+    }
+
+    public void registerObject(Object target) {
+        mInvoker.registerObject(target);
+    }
+
+    public void unRegisterObject(Object target) {
+        mInvoker.unRegisterObject(target);
     }
     
     @Override

@@ -40,12 +40,12 @@ public class AndLinker {
     private ITransfer mTransferService;
     private ICallback mCallback;
     
-    private AndLinker(Context context, String packageName, String action, String className, Invoker invoker, List<CallAdapter.Factory> adapterFactories) {
+    private AndLinker(Context context, String packageName, String action, String className, List<CallAdapter.Factory> adapterFactories) {
         mContext = context;
         mPackageName = packageName;
         mAction = action;
         mClassName = className;
-        mInvoker = invoker;
+        mInvoker = new Invoker();
         mAdapterFactories = adapterFactories;
         mDispatcher = new Dispatcher();
         mServiceConnection = createServiceConnection();
@@ -86,7 +86,15 @@ public class AndLinker {
         mContext.unbindService(mServiceConnection);
     }
 
-    public CallAdapter<?, ?> findCallAdapter(Type returnType, Annotation[] annotations) {
+    public void registerObject(Object target) {
+        mInvoker.registerObject(target);
+    }
+
+    public void unRegisterObject(Object target) {
+        mInvoker.unRegisterObject(target);
+    }
+
+    CallAdapter<?, ?> findCallAdapter(Type returnType, Annotation[] annotations) {
         checkNotNull(returnType, "returnType == null");
         checkNotNull(annotations, "annotations == null");
         
@@ -157,7 +165,6 @@ public class AndLinker {
         private String mAction;
         private String mClassName;
         private List<CallAdapter.Factory> mAdapterFactories = new ArrayList<>();
-        private Invoker mInvoker;
         
         public Builder(Context context) {
             mContext = context;
@@ -178,11 +185,6 @@ public class AndLinker {
             return this;
         }
 
-        public Builder invoker(Invoker invoker) {
-            mInvoker = invoker;
-            return this;
-        }
-
         public Builder addCallAdapterFactory(CallAdapter.Factory factory) {
             mAdapterFactories.add(checkNotNull(factory, "factory == null"));
             return this;
@@ -195,7 +197,7 @@ public class AndLinker {
             if (Utils.isStringBlank(mAction) && Utils.isStringBlank(mClassName)) {
                 throw new IllegalStateException("You must set one of the action or className.");
             }
-            return new AndLinker(mContext, mPackageName, mAction, mClassName, mInvoker, mAdapterFactories);
+            return new AndLinker(mContext, mPackageName, mAction, mClassName, mAdapterFactories);
         }
         
     }
