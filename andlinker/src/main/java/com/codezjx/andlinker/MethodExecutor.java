@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
 /**
  * Created by codezjx on 2017/10/22.<br/>
  */
-class MethodExecutor {
+final class MethodExecutor {
     
     /** Target object to invoke. */
     private final Object mTarget;
@@ -27,7 +27,7 @@ class MethodExecutor {
         method.setAccessible(true);
     }
 
-    public Response execute(Object[] args) {
+    Response execute(Object[] args) {
         Object result = null;
         int statusCode = Response.STATUS_CODE_SUCCESS;
         String resultMsg = String.format("Call method '%s' successfully!", mMethod.getName());

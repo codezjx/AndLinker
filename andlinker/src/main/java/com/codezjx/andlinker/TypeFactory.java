@@ -3,7 +3,7 @@ package com.codezjx.andlinker;
 /**
  * Created by codezjx on 2017/11/28.<br/>
  */
-public class TypeFactory {
+final class TypeFactory {
 
     private TypeFactory() {
         

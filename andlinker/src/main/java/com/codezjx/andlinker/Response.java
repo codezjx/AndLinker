@@ -6,18 +6,18 @@ import android.os.Parcelable;
 /**
  * Created by codezjx on 2017/9/13.<br/>
  */
-class Response implements Parcelable {
+final class Response implements Parcelable {
     
-    public static final int STATUS_CODE_SUCCESS = 200;
-    public static final int STATUS_CODE_ILLEGAL_ACCESS = 400;
-    public static final int STATUS_CODE_INVOCATION_FAIL = 401;
-    public static final int STATUS_CODE_NOT_FOUND = 404;
+    static final int STATUS_CODE_SUCCESS = 200;
+    static final int STATUS_CODE_ILLEGAL_ACCESS = 400;
+    static final int STATUS_CODE_INVOCATION_FAIL = 401;
+    static final int STATUS_CODE_NOT_FOUND = 404;
     
     private int mStatusCode;
     private String mStatusMessage;
     private Object mResult;
 
-    public Response(int statusCode, String statusMessage, Object result) {
+    Response(int statusCode, String statusMessage, Object result) {
         mStatusCode = statusCode;
         mStatusMessage = statusMessage;
         mResult = result;
@@ -35,7 +35,7 @@ class Response implements Parcelable {
         dest.writeValue(mResult);
     }
 
-    protected Response(Parcel in) {
+    private Response(Parcel in) {
         mStatusCode = in.readInt();
         mStatusMessage = in.readString();
         mResult = in.readValue(getClass().getClassLoader());
@@ -53,15 +53,15 @@ class Response implements Parcelable {
         }
     };
 
-    public int getStatusCode() {
+    int getStatusCode() {
         return mStatusCode;
     }
 
-    public String getStatusMessage() {
+    String getStatusMessage() {
         return mStatusMessage;
     }
 
-    public Object getResult() {
+    Object getResult() {
         return mResult;
     }
 

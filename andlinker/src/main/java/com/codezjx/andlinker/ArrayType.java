@@ -8,7 +8,7 @@ import java.lang.reflect.Array;
 /**
  * Created by codezjx on 2017/11/28.<br/>
  */
-public interface ArrayType<T> extends OutType<T> {
+interface ArrayType<T> extends OutType<T> {
 
     T newInstance(int length);
     

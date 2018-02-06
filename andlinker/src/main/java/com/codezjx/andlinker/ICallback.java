@@ -1,16 +1,16 @@
 package com.codezjx.andlinker;
 
-public interface ICallback extends android.os.IInterface {
+interface ICallback extends android.os.IInterface {
     /**
      * Local-side IPC implementation stub class.
      */
-    public static abstract class Stub extends android.os.Binder implements ICallback {
+    abstract class Stub extends android.os.Binder implements ICallback {
         private static final String DESCRIPTOR = "com.codezjx.alinker.ICallback";
 
         /**
          * Construct the stub at attach it to the interface.
          */
-        public Stub() {
+        Stub() {
             this.attachInterface(this, DESCRIPTOR);
         }
 
@@ -18,7 +18,7 @@ public interface ICallback extends android.os.IInterface {
          * Cast an IBinder object into an com.codezjx.alinker.ICallback interface,
          * generating a proxy if needed.
          */
-        public static ICallback asInterface(android.os.IBinder obj) {
+        static ICallback asInterface(android.os.IBinder obj) {
             if ((obj == null)) {
                 return null;
             }
@@ -110,5 +110,5 @@ public interface ICallback extends android.os.IInterface {
         static final int TRANSACTION_callback = (android.os.IBinder.FIRST_CALL_TRANSACTION + 0);
     }
 
-    public Response callback(Request request) throws android.os.RemoteException;
+    Response callback(Request request) throws android.os.RemoteException;
 }

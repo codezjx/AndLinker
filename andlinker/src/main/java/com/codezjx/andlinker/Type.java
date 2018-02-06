@@ -5,7 +5,7 @@ import android.os.Parcel;
 /**
  * Created by codezjx on 2017/11/28.<br/>
  */
-public interface Type<T> {
+interface Type<T> {
 
     void writeToParcel(Parcel dest, int flags, T val);
 

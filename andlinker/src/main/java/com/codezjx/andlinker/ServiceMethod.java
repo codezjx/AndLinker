@@ -16,7 +16,7 @@ import java.lang.reflect.Type;
  * Created by codezjx on 2017/9/14.<br/>
  * Adapts an invocation of an interface method into an AIDL call.
  */
-public class ServiceMethod {
+final class ServiceMethod {
     
     private static final String TAG = "ServiceMethod";
 
@@ -26,7 +26,7 @@ public class ServiceMethod {
     private boolean mOneWay; 
     private ParameterHandler<?>[] mParameterHandlers;
 
-    public ServiceMethod(Builder builder) {
+    ServiceMethod(Builder builder) {
         mCallAdapter = builder.mCallAdapter;
         mClassName = builder.mClassName;
         mMethodName = builder.mMethodName;
@@ -34,27 +34,27 @@ public class ServiceMethod {
         mParameterHandlers = builder.mParameterHandlers;
     }
 
-    public CallAdapter getCallAdapter() {
+    CallAdapter getCallAdapter() {
         return mCallAdapter;
     }
 
-    public String getClassName() {
+    String getClassName() {
         return mClassName;
     }
 
-    public String getMethodName() {
+    String getMethodName() {
         return mMethodName;
     }
 
-    public boolean isOneWay() {
+    boolean isOneWay() {
         return mOneWay;
     }
 
-    public ParameterHandler<?>[] getParameterHandlers() {
+    ParameterHandler<?>[] getParameterHandlers() {
         return mParameterHandlers;
     }
 
-    public static final class Builder {
+    static final class Builder {
 
         private AndLinker mLinker;
         private Method mMethod;
@@ -68,7 +68,7 @@ public class ServiceMethod {
         private boolean mOneWay = false;
         private ParameterHandler<?>[] mParameterHandlers;
 
-        public Builder(AndLinker linker, Method method) {
+        Builder(AndLinker linker, Method method) {
             mLinker = linker;
             mMethod = method;
             mMethodAnnotations = method.getAnnotations();
@@ -76,7 +76,7 @@ public class ServiceMethod {
             mParameterTypes = method.getGenericParameterTypes();
         }
         
-        public ServiceMethod build() {
+        ServiceMethod build() {
             mCallAdapter = createCallAdapter();
             parseClassName(mMethod);
 

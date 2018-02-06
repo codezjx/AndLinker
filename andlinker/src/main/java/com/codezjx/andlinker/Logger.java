@@ -11,7 +11,11 @@ import java.util.regex.Pattern;
 /**
  * Created by codezjx on 2018/1/23.<br/>
  */
-public final class Logger {
+final class Logger {
+
+    private Logger() {
+        // private constructor
+    }
 
     private static final String DEFAULT_LOG_TAG = "Logger";
     private static final int MAX_TAG_LENGTH = 23;
@@ -20,59 +24,59 @@ public final class Logger {
     private static final Pattern ANONYMOUS_CLASS = Pattern.compile("(\\$\\d+)+$");
     static boolean sEnable = true;
 
-    public static void v(String msg) {
+    static void v(String msg) {
         log(Log.VERBOSE, null, msg, null);
     }
 
-    public static void v(String tag, String msg) {
+    static void v(String tag, String msg) {
         log(Log.VERBOSE, tag, msg, null);
     }
 
-    public static void d(String msg) {
+    static void d(String msg) {
         log(Log.DEBUG, null, msg, null);
     }
     
-    public static void d(String tag, String msg) {
+    static void d(String tag, String msg) {
         log(Log.DEBUG, tag, msg, null);
     }
 
-    public static void i(String msg) {
+    static void i(String msg) {
         log(Log.INFO, null, msg, null);
     }
 
-    public static void i(String tag, String msg) {
+    static void i(String tag, String msg) {
         log(Log.INFO, tag, msg, null);
     }
 
-    public static void w(String msg) {
+    static void w(String msg) {
         log(Log.WARN, null, msg, null);
     }
 
-    public static void w(String tag, String msg) {
+    static void w(String tag, String msg) {
         log(Log.WARN, tag, msg, null);
     }
 
-    public static void w(String msg, Throwable t) {
+    static void w(String msg, Throwable t) {
         log(Log.WARN, null, msg, t);
     }
 
-    public static void w(String tag, String msg, Throwable t) {
+    static void w(String tag, String msg, Throwable t) {
         log(Log.WARN, tag, msg, t);
     }
 
-    public static void e(String msg) {
+    static void e(String msg) {
         log(Log.ERROR, null, msg, null);
     }
 
-    public static void e(String tag, String msg) {
+    static void e(String tag, String msg) {
         log(Log.ERROR, tag, msg, null);
     }
 
-    public static void e(String msg, Throwable t) {
+    static void e(String msg, Throwable t) {
         log(Log.ERROR, null, msg, t);
     }
 
-    public static void e(String tag, String msg, Throwable t) {
+    static void e(String tag, String msg, Throwable t) {
         log(Log.ERROR, tag, msg, t);
     }
 

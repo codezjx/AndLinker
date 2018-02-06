@@ -5,15 +5,15 @@ import android.os.Parcel;
 /**
  * Created by codezjx on 2017/11/18.<br/>
  */
-public class CallbackTypeWrapper implements BaseTypeWrapper {
+final class CallbackTypeWrapper implements BaseTypeWrapper {
 
     private String mClassName;
 
-    public CallbackTypeWrapper(String className) {
+    CallbackTypeWrapper(String className) {
         mClassName = className;
     }
 
-    public String getClassName() {
+    String getClassName() {
         return mClassName;
     }
 
@@ -42,7 +42,7 @@ public class CallbackTypeWrapper implements BaseTypeWrapper {
         mClassName = in.readString();
     }
 
-    protected CallbackTypeWrapper(Parcel in) {
+    private CallbackTypeWrapper(Parcel in) {
         readFromParcel(in);
     }
 

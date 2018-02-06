@@ -5,12 +5,12 @@ import android.os.Parcel;
 /**
  * Created by codezjx on 2017/11/19.<br/>
  */
-public class InTypeWrapper implements BaseTypeWrapper {
+final class InTypeWrapper implements BaseTypeWrapper {
     
     private int mType;
     private Object mParam;
 
-    public InTypeWrapper(Object param, Class<?> mParamType) {
+    InTypeWrapper(Object param, Class<?> mParamType) {
         mType = Utils.getTypeByClass(mParamType);
         mParam = param;
     }
@@ -46,7 +46,7 @@ public class InTypeWrapper implements BaseTypeWrapper {
         // Nothing to do with in type
     }
 
-    protected InTypeWrapper(Parcel in) {
+    private InTypeWrapper(Parcel in) {
         mType = in.readInt();
         Type type = TypeFactory.getType(mType);
         mParam = type.createFromParcel(in);

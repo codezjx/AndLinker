@@ -5,7 +5,7 @@ import android.os.Parcel;
 /**
  * Created by codezjx on 2017/11/30.<br/>
  */
-public class InOutTypeWrapper implements BaseTypeWrapper {
+final class InOutTypeWrapper implements BaseTypeWrapper {
 
     private int mType;
     private Object mParam;
@@ -44,7 +44,7 @@ public class InOutTypeWrapper implements BaseTypeWrapper {
         type.readFromParcel(in, mParam);
     }
 
-    protected InOutTypeWrapper(Parcel in) {
+    private InOutTypeWrapper(Parcel in) {
         mType = in.readInt();
         Type type = TypeFactory.getType(mType);
         mParam = type.createFromParcel(in);

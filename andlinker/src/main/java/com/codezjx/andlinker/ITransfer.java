@@ -1,18 +1,16 @@
 package com.codezjx.andlinker;
 
-import android.os.IBinder;
-
-public interface ITransfer extends android.os.IInterface {
+interface ITransfer extends android.os.IInterface {
     /**
      * Local-side IPC implementation stub class.
      */
-    public static abstract class Stub extends android.os.Binder implements ITransfer {
+    abstract class Stub extends android.os.Binder implements ITransfer {
         private static final String DESCRIPTOR = "com.codezjx.alinker.ITransfer";
 
         /**
          * Construct the stub at attach it to the interface.
          */
-        public Stub() {
+        Stub() {
             this.attachInterface(this, DESCRIPTOR);
         }
 
@@ -20,7 +18,7 @@ public interface ITransfer extends android.os.IInterface {
          * Cast an IBinder object into an com.codezjx.alinker.ITransfer interface,
          * generating a proxy if needed.
          */
-        public static ITransfer asInterface(android.os.IBinder obj) {
+        static ITransfer asInterface(android.os.IBinder obj) {
             if ((obj == null)) {
                 return null;
             }
@@ -52,7 +50,7 @@ public interface ITransfer extends android.os.IInterface {
                         _arg0 = null;
                     }
                     Response _result = this.execute(_arg0);
-                    if ((flags & IBinder.FLAG_ONEWAY) != 0) {
+                    if ((flags & android.os.IBinder.FLAG_ONEWAY) != 0) {
                         // One-way mode just execute and return directly.
                         return true;
                     }
@@ -122,7 +120,7 @@ public interface ITransfer extends android.os.IInterface {
                     }
                     // One-way mode just transact and return directly.
                     if (request != null && request.isOneWay()) {
-                        mRemote.transact(Stub.TRANSACTION_execute, _data, null, IBinder.FLAG_ONEWAY);
+                        mRemote.transact(Stub.TRANSACTION_execute, _data, null, android.os.IBinder.FLAG_ONEWAY);
                         return null;
                     }
                     mRemote.transact(Stub.TRANSACTION_execute, _data, _reply, 0);
@@ -178,9 +176,9 @@ public interface ITransfer extends android.os.IInterface {
         static final int TRANSACTION_unRegister = (android.os.IBinder.FIRST_CALL_TRANSACTION + 2);
     }
 
-    public Response execute(Request request) throws android.os.RemoteException;
+    Response execute(Request request) throws android.os.RemoteException;
 
-    public void register(ICallback callback) throws android.os.RemoteException;
+    void register(ICallback callback) throws android.os.RemoteException;
 
-    public void unRegister(ICallback callback) throws android.os.RemoteException;
+    void unRegister(ICallback callback) throws android.os.RemoteException;
 }

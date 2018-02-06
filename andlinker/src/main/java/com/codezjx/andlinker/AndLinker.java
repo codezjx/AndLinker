@@ -24,7 +24,7 @@ import static com.codezjx.andlinker.Utils.checkNotNull;
 /**
  * Created by codezjx on 2017/9/14.<br/>
  */
-public class AndLinker {
+public final class AndLinker {
     
     private static final String TAG = "AndLinker";
 

@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by codezjx on 2017/10/3.<br/>
  */
-class Invoker {
+final class Invoker {
     
     private static final String TAG = "Invoker";
 

@@ -14,13 +14,13 @@ import java.util.Map;
 /**
  * Created by codezjx on 2017/9/14.<br/>
  */
-public class Utils {
+final class Utils {
     
     private Utils() {
-        
+        // private constructor
     }
 
-    public static <T> void validateServiceInterface(Class<T> service) {
+    static <T> void validateServiceInterface(Class<T> service) {
         if (!service.isInterface()) {
             throw new IllegalArgumentException("API declarations must be interfaces.");
         }
@@ -122,7 +122,7 @@ public class Utils {
                 || classType == String[].class || classType == CharSequence[].class || classType == Parcelable[].class;
     }
 
-    public static int getTypeByClass(Class<?> classType) {
+    static int getTypeByClass(Class<?> classType) {
         int type;
         if (classType == byte.class || classType == Byte.class) {
             type = BaseTypeWrapper.TYPE_BYTE;

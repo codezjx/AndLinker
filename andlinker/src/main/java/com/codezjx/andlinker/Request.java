@@ -9,7 +9,7 @@ import java.util.Arrays;
 /**
  * Created by codezjx on 2017/9/13.<br/>
  */
-class Request implements SuperParcelable {
+final class Request implements SuperParcelable {
 
     private String mTargetClass;
     private String mMethodName;
@@ -17,15 +17,11 @@ class Request implements SuperParcelable {
     // This field use for client slide only
     private boolean mOneWay = false;
 
-    public Request() {
-        
-    }
-
-    public Request(String targetClass, String methodName, BaseTypeWrapper[] argsWrapper) {
+    Request(String targetClass, String methodName, BaseTypeWrapper[] argsWrapper) {
         this(targetClass, methodName, argsWrapper, false);
     }
 
-    public Request(String targetClass, String methodName, BaseTypeWrapper[] argsWrapper, boolean oneWay) {
+    Request(String targetClass, String methodName, BaseTypeWrapper[] argsWrapper, boolean oneWay) {
         mTargetClass = targetClass;
         mMethodName = methodName;
         mArgsWrapper = argsWrapper;
@@ -55,7 +51,7 @@ class Request implements SuperParcelable {
         readParcelableArrayFromParcel(in, mArgsWrapper);
     }
 
-    protected Request(Parcel in) {
+    private Request(Parcel in) {
         mTargetClass = in.readString();
         mMethodName = in.readString();
         mArgsWrapper = readParcelableArray(getClass().getClassLoader(), BaseTypeWrapper.class, in);
@@ -111,19 +107,19 @@ class Request implements SuperParcelable {
         }
     };
 
-    public String getTargetClass() {
+    String getTargetClass() {
         return mTargetClass;
     }
 
-    public String getMethodName() {
+    String getMethodName() {
         return mMethodName;
     }
 
-    public boolean isOneWay() {
+    boolean isOneWay() {
         return mOneWay;
     }
 
-    public BaseTypeWrapper[] getArgsWrapper() {
+    BaseTypeWrapper[] getArgsWrapper() {
         return mArgsWrapper;
     }
 

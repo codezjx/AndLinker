@@ -7,7 +7,7 @@ import static com.codezjx.andlinker.Utils.checkNotNull;
 /**
  * Created by codezjx on 2017/10/14.<br/>
  */
-public class RemoteCall implements Call<Object> {
+final class RemoteCall implements Call<Object> {
     
     private static final String TAG = "RemoteCall";
 
@@ -18,7 +18,7 @@ public class RemoteCall implements Call<Object> {
     private volatile boolean mExecuted;
     private volatile boolean mCanceled;
 
-    public RemoteCall(ITransfer transferService, ServiceMethod serviceMethod, Object[] args, Dispatcher dispatcher) {
+    RemoteCall(ITransfer transferService, ServiceMethod serviceMethod, Object[] args, Dispatcher dispatcher) {
         mTransferService = transferService;
         mServiceMethod = serviceMethod;
         mArgs = args;

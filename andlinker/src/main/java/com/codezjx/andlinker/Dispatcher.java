@@ -12,21 +12,21 @@ import java.util.concurrent.atomic.AtomicInteger;
 /**
  * Created by codezjx on 2018/1/10.<br/>
  */
-public class Dispatcher {
+final class Dispatcher {
 
     private static final String THREAD_NAME = "Dispatcher Thread #";
     private static final int KEEP_ALIVE_TIME_SECONDS = 60;
     private ExecutorService mExecutorService;
 
-    public Dispatcher() {
+    Dispatcher() {
         
     }
 
-    public Dispatcher(ExecutorService executorService) {
+    Dispatcher(ExecutorService executorService) {
         mExecutorService = executorService;
     }
 
-    public synchronized void enqueue(Runnable task) {
+    synchronized void enqueue(Runnable task) {
         if (mExecutorService == null) {
             mExecutorService = new ThreadPoolExecutor(0, Integer.MAX_VALUE,
                     KEEP_ALIVE_TIME_SECONDS, TimeUnit.SECONDS,

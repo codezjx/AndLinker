@@ -9,7 +9,7 @@ import java.util.HashMap;
 /**
  * Created by codezjx on 2017/11/30.<br/>
  */
-public class OutTypeWrapper implements BaseTypeWrapper {
+final class OutTypeWrapper implements BaseTypeWrapper {
 
     private int mType;
     private Object mParam;
@@ -61,7 +61,7 @@ public class OutTypeWrapper implements BaseTypeWrapper {
         type.readFromParcel(in, mParam);
     }
 
-    protected OutTypeWrapper(Parcel in) {
+    private OutTypeWrapper(Parcel in) {
         mType = in.readInt();
         if (mType == BaseTypeWrapper.TYPE_PARCELABLE) {
             String clsName = in.readString();

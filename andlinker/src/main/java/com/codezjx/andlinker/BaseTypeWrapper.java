@@ -3,7 +3,7 @@ package com.codezjx.andlinker;
 /**
  * Created by codezjx on 2017/11/19.<br/>
  */
-public interface BaseTypeWrapper extends SuperParcelable {
+interface BaseTypeWrapper extends SuperParcelable {
 
     int TYPE_EMPTY = 0;
     

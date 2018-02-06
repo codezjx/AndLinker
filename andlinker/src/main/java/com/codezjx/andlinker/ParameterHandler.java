@@ -10,7 +10,7 @@ import java.lang.annotation.Annotation;
 /**
  * Created by codezjx on 2017/9/17.<br/>
  */
-public interface ParameterHandler<T> {
+interface ParameterHandler<T> {
 
     void apply(RequestBuilder builder, T value, int index);
     
@@ -18,7 +18,7 @@ public interface ParameterHandler<T> {
 
         Class<?> mParamType;
 
-        public CallbackHandler(Class<?> paramType) {
+        CallbackHandler(Class<?> paramType) {
             mParamType = paramType;
         }
 
@@ -41,7 +41,7 @@ public interface ParameterHandler<T> {
         Annotation mAnnotation;
         Class<?> mParamType;
 
-        public ParamDirectionHandler(Annotation annotation, Class<?> paramType) {
+        ParamDirectionHandler(Annotation annotation, Class<?> paramType) {
             mAnnotation = annotation;
             mParamType = paramType;
         }
@@ -68,7 +68,7 @@ public interface ParameterHandler<T> {
 
         Class<?> mParamType;
 
-        public DefaultParameterHandler(Class<?> paramType) {
+        DefaultParameterHandler(Class<?> paramType) {
             mParamType = paramType;
         }
 
