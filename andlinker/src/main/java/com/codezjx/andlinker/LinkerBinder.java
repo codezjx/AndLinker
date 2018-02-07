@@ -18,12 +18,12 @@ public class LinkerBinder extends ITransfer.Stub {
         mCallbackList = mInvoker.getCallbackList();
     }
 
-    public void registerClass(Class<?> clazz) {
-        mInvoker.registerClass(clazz);
+    public void registerCallbackClass(Class<?> clazz) {
+        mInvoker.registerCallbackClass(clazz);
     }
 
-    public void unRegisterClass(Class<?> clazz) {
-        mInvoker.unRegisterClass(clazz);
+    public void unRegisterCallbackClass(Class<?> clazz) {
+        mInvoker.unRegisterCallbackClass(clazz);
     }
 
     public void registerObject(Object target) {

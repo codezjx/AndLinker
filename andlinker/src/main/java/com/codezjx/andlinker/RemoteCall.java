@@ -26,6 +26,10 @@ final class RemoteCall implements Call<Object> {
     }
 
     private Object executeInternal() throws RemoteException {
+        if (mTransferService == null) {
+            Logger.e(TAG, "TransferService null when execute, this may occur if the client is not already bind to the service.");
+            return null;
+        }
         @SuppressWarnings("unchecked")
         ParameterHandler<Object>[] handlers = (ParameterHandler<Object>[]) mServiceMethod.getParameterHandlers();
 

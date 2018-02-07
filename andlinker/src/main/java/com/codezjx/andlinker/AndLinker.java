@@ -39,6 +39,7 @@ public final class AndLinker {
     private Dispatcher mDispatcher;
     private ITransfer mTransferService;
     private ICallback mCallback;
+    private BindCallback mBindCallback;
     
     private AndLinker(Context context, String packageName, String action, String className, List<CallAdapter.Factory> adapterFactories) {
         mContext = context;
@@ -94,6 +95,14 @@ public final class AndLinker {
         mInvoker.unRegisterObject(target);
     }
 
+    public void setBindCallback(BindCallback bindCallback) {
+        mBindCallback = bindCallback;
+    }
+
+    public boolean isBind() {
+        return mTransferService != null;
+    }
+
     CallAdapter<?, ?> findCallAdapter(Type returnType, Annotation[] annotations) {
         checkNotNull(returnType, "returnType == null");
         checkNotNull(annotations, "annotations == null");
@@ -113,6 +122,7 @@ public final class AndLinker {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
                 mTransferService = ITransfer.Stub.asInterface(service);
+                fireOnBind();
                 try {
                     mTransferService.register(mCallback);
                 } catch (RemoteException e) {
@@ -122,14 +132,32 @@ public final class AndLinker {
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
+                if (mTransferService == null) {
+                    Logger.e(TAG, "Error occur, TransferService was null when service disconnected.");
+                    fireOnUnBind();
+                    return;
+                }
                 try {
                     mTransferService.unRegister(mCallback);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
                 mTransferService = null;
+                fireOnUnBind();
             }
         };
+    }
+
+    private void fireOnBind() {
+        if (mBindCallback != null) {
+            mBindCallback.onBind();
+        }
+    }
+
+    private void fireOnUnBind() {
+        if (mBindCallback != null) {
+            mBindCallback.onUnBind();
+        }
     }
 
     private ICallback createCallback() {
@@ -156,6 +184,14 @@ public final class AndLinker {
             }
         }
         return result;
+    }
+
+    /**
+     * Method to enable or disable logger
+     * @param enable
+     */
+    public static void enableLogger(boolean enable) {
+        Logger.sEnable = enable;
     }
 
     public static final class Builder {
@@ -199,6 +235,15 @@ public final class AndLinker {
             }
             return new AndLinker(mContext, mPackageName, mAction, mClassName, mAdapterFactories);
         }
-        
+    }
+
+    /**
+     * Interface definition for a callback to be invoked when linker is bind or unBind to the service.
+     */
+    public interface BindCallback {
+
+        void onBind();
+
+        void onUnBind();
     }
 }

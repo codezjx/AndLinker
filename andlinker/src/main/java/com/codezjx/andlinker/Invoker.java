@@ -19,27 +19,27 @@ final class Invoker {
     
     private static final String TAG = "Invoker";
 
-    private final ConcurrentHashMap<String, Class<?>> mClassTypes;
+    private final ConcurrentHashMap<String, Class<?>> mCallbackClassTypes;
     private final ConcurrentHashMap<String, MethodExecutor> mMethodExecutors;
     private final RemoteCallbackList<ICallback> mCallbackList;
     
     Invoker() {
-        mClassTypes = new ConcurrentHashMap<String, Class<?>>();
+        mCallbackClassTypes = new ConcurrentHashMap<String, Class<?>>();
         mMethodExecutors = new ConcurrentHashMap<String, MethodExecutor>();
         mCallbackList = new RemoteCallbackList<ICallback>();
     }
 
-    void registerClass(Class<?> clazz) {
+    void registerCallbackClass(Class<?> clazz) {
         ClassName className = clazz.getAnnotation(ClassName.class);
         if (className != null) {
-            mClassTypes.putIfAbsent(className.value(), clazz);
+            mCallbackClassTypes.putIfAbsent(className.value(), clazz);
         }
     }
 
-    void unRegisterClass(Class<?> clazz) {
+    void unRegisterCallbackClass(Class<?> clazz) {
         ClassName className = clazz.getAnnotation(ClassName.class);
         if (className != null) {
-            mClassTypes.remove(className.value());
+            mCallbackClassTypes.remove(className.value());
         }
     }
 
@@ -101,7 +101,7 @@ final class Invoker {
             args[i] = wrappers[i].getParam();
             if (wrappers[i].getType() == BaseTypeWrapper.TYPE_CALLBACK) {
                 int pid = Binder.getCallingPid();
-                Class<?> clazz = getClass(((CallbackTypeWrapper) wrappers[i]).getClassName());
+                Class<?> clazz = getCallbackClass(((CallbackTypeWrapper) wrappers[i]).getClassName());
                 args[i] = getCallbackProxy(clazz, pid);
             }
         }
@@ -174,8 +174,8 @@ final class Invoker {
         return methodNameStr;
     }
 
-    private Class<?> getClass(String className) {
-        return mClassTypes.get(className);
+    private Class<?> getCallbackClass(String className) {
+        return mCallbackClassTypes.get(className);
     }
 
     private String createMethodExecutorKey(String clsName, String methodName) {

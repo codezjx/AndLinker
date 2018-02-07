@@ -22,7 +22,7 @@ final class Logger {
     // 3 method calls inside Logger
     private static final int CALL_STACK_INDEX = 3;
     private static final Pattern ANONYMOUS_CLASS = Pattern.compile("(\\$\\d+)+$");
-    static boolean sEnable = true;
+    static boolean sEnable = false;
 
     static void v(String msg) {
         log(Log.VERBOSE, null, msg, null);
