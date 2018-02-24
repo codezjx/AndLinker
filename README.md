@@ -1,4 +1,5 @@
 
+[![Build Status](https://travis-ci.org/codezjx/AndLinker.svg?branch=master)](https://travis-ci.org/codezjx/AndLinker)
 [![JCenter](https://api.bintray.com/packages/codezjx/maven/and-linker/images/download.svg)](https://bintray.com/codezjx/maven/and-linker/_latestVersion)
 [![License](https://img.shields.io/badge/License-Apache%20License%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
