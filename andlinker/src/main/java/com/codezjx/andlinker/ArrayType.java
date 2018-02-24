@@ -247,12 +247,12 @@ interface ArrayType<T> extends OutType<T> {
 
         @Override
         public void writeToParcel(Parcel dest, int flags, CharSequence[] val) {
-            dest.writeCharSequenceArray(val);
+            writeCharSequenceArray(dest, val);
         }
 
         @Override
         public CharSequence[] createFromParcel(Parcel in) {
-            return in.readCharSequenceArray();
+            return readCharSequenceArray(in);
         }
 
         @Override
@@ -260,7 +260,7 @@ interface ArrayType<T> extends OutType<T> {
             int N = in.readInt();
             if (N == val.length) {
                 for (int i = 0; i < N; i++) {
-                    val[i] = in.readCharSequence();
+                    val[i] = Type.CharSequenceType.readCharSequence(in);
                 }
             } else {
                 throw new RuntimeException("bad array lengths");
@@ -270,6 +270,33 @@ interface ArrayType<T> extends OutType<T> {
         @Override
         public CharSequence[] newInstance(int length) {
             return new CharSequence[length];
+        }
+
+        private void writeCharSequenceArray(Parcel dest, CharSequence[] val) {
+            if (val != null) {
+                int N = val.length;
+                dest.writeInt(N);
+                for (int i = 0; i < N; i++) {
+                    Type.CharSequenceType.writeCharSequence(dest, val[i]);
+                }
+            } else {
+                dest.writeInt(-1);
+            }
+        }
+
+        private CharSequence[] readCharSequenceArray(Parcel in) {
+            CharSequence[] array = null;
+
+            int length = in.readInt();
+            if (length >= 0) {
+                array = new CharSequence[length];
+
+                for (int i = 0 ; i < length ; i++) {
+                    array[i] = Type.CharSequenceType.readCharSequence(in);
+                }
+            }
+
+            return array;
         }
     }
 

@@ -1,6 +1,7 @@
 package com.codezjx.andlinker;
 
 import android.os.Parcel;
+import android.text.TextUtils;
 
 /**
  * Created by codezjx on 2017/11/28.<br/>
@@ -145,12 +146,20 @@ interface Type<T> {
 
         @Override
         public void writeToParcel(Parcel dest, int flags, CharSequence val) {
-            dest.writeCharSequence(val);
+            writeCharSequence(dest, val);
         }
 
         @Override
         public CharSequence createFromParcel(Parcel in) {
-            return in.readCharSequence();
+            return readCharSequence(in);
+        }
+
+        static void writeCharSequence(Parcel dest, CharSequence val) {
+            TextUtils.writeToParcel(val, dest, 0);
+        }
+
+        static CharSequence readCharSequence(Parcel in) {
+            return TextUtils.CHAR_SEQUENCE_CREATOR.createFromParcel(in);
         }
     }
     
