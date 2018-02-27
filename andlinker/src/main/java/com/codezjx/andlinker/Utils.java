@@ -1,9 +1,11 @@
 package com.codezjx.andlinker;
 
+import android.os.Parcel;
 import android.os.Parcelable;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.GenericArrayType;
+import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
 import java.lang.reflect.TypeVariable;
@@ -15,6 +17,8 @@ import java.util.Map;
  * Created by codezjx on 2017/9/14.<br/>
  */
 final class Utils {
+    
+    private static final String TAG = "Utils";
     
     private Utils() {
         // private constructor
@@ -205,6 +209,19 @@ final class Utils {
 
     static boolean isStringBlank(String str) {
         return str == null || str.trim().length() == 0;
+    }
+
+    static Method getMethodReadFromParcel(Class<?> cls) {
+        checkNotNull(cls, "Class must not be null.");
+        Method method = null;
+        try {
+            method = cls.getMethod("readFromParcel", Parcel.class);
+        } catch (NoSuchMethodException e) {
+            Logger.e(TAG, "No public readFromParcel() method in class:" + cls.getName());
+        } catch (SecurityException e) {
+            Logger.e(TAG, "SecurityException when get readFromParcel() method in class:" + cls.getName());
+        }
+        return method;
     }
     
 }

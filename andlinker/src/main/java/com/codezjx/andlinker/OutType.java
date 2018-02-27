@@ -3,6 +3,8 @@ package com.codezjx.andlinker;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
@@ -14,6 +16,8 @@ interface OutType<T> extends Type<T> {
     void readFromParcel(Parcel in, T val);
 
     final class ParcelableType implements OutType<Parcelable> {
+        
+        private static final String TAG = "ParcelableType";
 
         @Override
         public void writeToParcel(Parcel dest, int flags, Parcelable val) {
@@ -31,10 +35,23 @@ interface OutType<T> extends Type<T> {
 
         @Override
         public void readFromParcel(Parcel in, Parcelable val) {
-            if (!(val instanceof SuperParcelable)) {
-                throw new IllegalArgumentException("Parcelable parameter with out type must implements interface SuperParcelable.");
+            if (val instanceof SuperParcelable) {
+                ((SuperParcelable) val).readFromParcel(in);
+                return;
             }
-            ((SuperParcelable) val).readFromParcel(in);
+            Method method = Utils.getMethodReadFromParcel(val.getClass());
+            if (method == null) {
+                throw new IllegalArgumentException("Parcelable parameter with @Out or @Inout annotation must " +
+                        "declare the public readFromParcel() method or implements interface SuperParcelable. " +
+                        "Error parameter type: " + val.getClass().getName());
+            }
+            try {
+                method.invoke(val, in);
+            } catch (IllegalAccessException e) {
+                Logger.e(TAG, "Can't access method readFromParcel().", e);
+            } catch (InvocationTargetException e) {
+                Logger.e(TAG, "Method readFromParcel() throws an exception.", e);
+            }
         }
     }
 
