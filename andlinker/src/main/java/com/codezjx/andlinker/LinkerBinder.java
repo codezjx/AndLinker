@@ -19,16 +19,6 @@ final class LinkerBinder extends ITransfer.Stub implements ILinkerBinder {
     }
 
     @Override
-    public void registerCallbackClass(Class<?> clazz) {
-        mInvoker.registerCallbackClass(clazz);
-    }
-
-    @Override
-    public void unRegisterCallbackClass(Class<?> clazz) {
-        mInvoker.unRegisterCallbackClass(clazz);
-    }
-
-    @Override
     public void registerObject(Object target) {
         mInvoker.registerObject(target);
     }

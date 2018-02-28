@@ -7,10 +7,6 @@ import android.os.IBinder;
  */
 public interface ILinkerBinder extends IBinder {
 
-    void registerCallbackClass(Class<?> clazz);
-
-    void unRegisterCallbackClass(Class<?> clazz);
-
     void registerObject(Object target);
 
     void unRegisterObject(Object target);

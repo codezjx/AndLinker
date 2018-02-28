@@ -7,6 +7,7 @@ import android.os.RemoteException;
 import com.codezjx.andlinker.annotation.ClassName;
 import com.codezjx.andlinker.annotation.MethodName;
 
+import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -29,16 +30,14 @@ final class Invoker {
         mCallbackList = new RemoteCallbackList<ICallback>();
     }
 
-    void registerCallbackClass(Class<?> clazz) {
+    private void handleCallbackClass(Class<?> clazz, boolean isRegister) {
         ClassName className = clazz.getAnnotation(ClassName.class);
-        if (className != null) {
-            mCallbackClassTypes.putIfAbsent(className.value(), clazz);
+        if (className == null) {
+            throw new IllegalArgumentException("Callback interface doesn't has any annotation.");
         }
-    }
-
-    void unRegisterCallbackClass(Class<?> clazz) {
-        ClassName className = clazz.getAnnotation(ClassName.class);
-        if (className != null) {
+        if (isRegister) {
+            mCallbackClassTypes.putIfAbsent(className.value(), clazz);
+        } else {
             mCallbackClassTypes.remove(className.value());
         }
     }
@@ -82,7 +81,30 @@ final class Invoker {
                     mMethodExecutors.remove(key);
                 }
             }
+            // Cache callback class if exist
+            Class<?>[] paramCls = method.getParameterTypes();
+            Annotation[][] paramAnnotations = method.getParameterAnnotations();
+            for (int i = 0; i < paramCls.length; i++) {
+                Class<?> cls = paramCls[i];
+                Annotation[] annotations = paramAnnotations[i];
+                if (!containCallbackAnnotation(annotations)) {
+                    continue;
+                }
+                handleCallbackClass(cls, isRegister);
+            }
         }
+    }
+
+    private boolean containCallbackAnnotation(Annotation[] annotations) {
+        if (annotations == null) {
+            return false;
+        }
+        for (Annotation annotation : annotations) {
+            if (annotation instanceof com.codezjx.andlinker.annotation.Callback) {
+                return true;
+            }
+        }
+        return false;
     }
 
     void registerObject(Object target) {
@@ -101,7 +123,11 @@ final class Invoker {
             args[i] = wrappers[i].getParam();
             if (wrappers[i].getType() == BaseTypeWrapper.TYPE_CALLBACK) {
                 int pid = Binder.getCallingPid();
-                Class<?> clazz = getCallbackClass(((CallbackTypeWrapper) wrappers[i]).getClassName());
+                String clazzName = ((CallbackTypeWrapper) wrappers[i]).getClassName();
+                Class<?> clazz = getCallbackClass(clazzName);
+                if (clazz == null) {
+                    throw new IllegalStateException("Can't find callback class: " + clazzName);
+                }
                 args[i] = getCallbackProxy(clazz, pid);
             }
         }
