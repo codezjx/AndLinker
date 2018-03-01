@@ -1,7 +1,5 @@
 package com.codezjx.andlinker;
 
-import android.support.annotation.NonNull;
-
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
@@ -40,7 +38,7 @@ final class Dispatcher {
             private final AtomicInteger mCount = new AtomicInteger(1);
             
             @Override
-            public Thread newThread(@NonNull Runnable runnable) {
+            public Thread newThread(Runnable runnable) {
                 Thread thread = new Thread(runnable, THREAD_NAME + mCount.getAndIncrement());
                 thread.setDaemon(false);
                 return thread;

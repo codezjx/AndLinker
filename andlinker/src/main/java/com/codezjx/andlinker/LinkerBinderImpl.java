@@ -7,13 +7,13 @@ import android.os.RemoteException;
 /**
  * Created by codezjx on 2017/9/13.<br/>
  */
-final class LinkerBinder extends ITransfer.Stub implements ILinkerBinder {
+final class LinkerBinderImpl extends ITransfer.Stub implements AndLinkerBinder {
     
     private static final String TAG = "LinkerBinder";
     private RemoteCallbackList<ICallback> mCallbackList;
     private Invoker mInvoker;
 
-    LinkerBinder() {
+    LinkerBinderImpl() {
         mInvoker = new Invoker();
         mCallbackList = mInvoker.getCallbackList();
     }
