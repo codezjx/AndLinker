@@ -11,7 +11,7 @@ import rx.Scheduler;
 
 
 /**
- * Created by codezjx on 2017/10/16.<br/>
+ * A {@linkplain CallAdapter.Factory call adapter} which uses RxJava for creating observables.
  */
 public class RxJavaCallAdapterFactory extends CallAdapter.Factory {
 

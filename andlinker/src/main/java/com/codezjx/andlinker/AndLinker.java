@@ -22,7 +22,9 @@ import java.util.concurrent.ConcurrentHashMap;
 import static com.codezjx.andlinker.Utils.checkNotNull;
 
 /**
- * Created by codezjx on 2017/9/14.<br/>
+ * AndLinker adapts a Java interface to IPC calls by using annotations on the declared methods to
+ * define how requests are made. Create instances using {@linkplain Builder
+ * the builder} and pass your interface to {@link #create} to generate an implementation.
  */
 public final class AndLinker {
     
@@ -53,6 +55,9 @@ public final class AndLinker {
         mCallback = createCallback();
     }
 
+    /**
+     * Create an implementation defined by the remote service interface.
+     */
     @SuppressWarnings("unchecked") // Single-interface proxy creation guarded by parameter safety.
     public <T> T create(final Class<T> service) {
         Utils.validateServiceInterface(service);
@@ -71,6 +76,9 @@ public final class AndLinker {
                 });
     }
 
+    /**
+     * Connect to the remote service.
+     */
     public void bind() {
         Intent intent = new Intent();
         if (!Utils.isStringBlank(mAction)) {
@@ -82,23 +90,38 @@ public final class AndLinker {
         intent.setPackage(mPackageName);
         mContext.bindService(intent, mServiceConnection, Context.BIND_AUTO_CREATE);
     }
-    
+
+    /**
+     * Disconnect from the remote service.
+     */
     public void unbind() {
         mContext.unbindService(mServiceConnection);
     }
 
+    /**
+     * Register client interface implementation called by remote service.
+     */
     public void registerObject(Object target) {
         mInvoker.registerObject(target);
     }
 
+    /**
+     * Unregister client interface implementation.
+     */
     public void unRegisterObject(Object target) {
         mInvoker.unRegisterObject(target);
     }
 
+    /**
+     * Set callback to be invoked when linker is bind or unBind.
+     */
     public void setBindCallback(BindCallback bindCallback) {
         mBindCallback = bindCallback;
     }
 
+    /**
+     * Return the remote service bind state.
+     */
     public boolean isBind() {
         return mTransferService != null;
     }
@@ -187,13 +210,15 @@ public final class AndLinker {
     }
 
     /**
-     * Method to enable or disable logger
-     * @param enable
+     * Method to enable or disable internal logger
      */
     public static void enableLogger(boolean enable) {
         Logger.sEnable = enable;
     }
 
+    /**
+     * Builder to create a new {@link AndLinker} instance.
+     */
     public static final class Builder {
         
         private Context mContext;
@@ -206,26 +231,41 @@ public final class AndLinker {
             mContext = context;
         }
 
+        /**
+         * Set the remote service package name.
+         */
         public Builder packageName(String packageName) {
             mPackageName = packageName;
             return this;
         }
 
+        /**
+         * Set the action to bind the remote service.
+         */
         public Builder action(String action) {
             mAction = action;
             return this;
         }
 
+        /**
+         * Set the class name of the remote service.
+         */
         public Builder className(String className) {
             mClassName = className;
             return this;
         }
 
+        /**
+         * Add a call adapter factory for supporting service method return types other than {@link Call}.
+         */
         public Builder addCallAdapterFactory(CallAdapter.Factory factory) {
             mAdapterFactories.add(checkNotNull(factory, "factory == null"));
             return this;
         }
 
+        /**
+         * Create the {@link AndLinker} instance using the configured values.
+         */
         public AndLinker build() {
             if (Utils.isStringBlank(mPackageName)) {
                 throw new IllegalStateException("Package name required.");
@@ -242,8 +282,14 @@ public final class AndLinker {
      */
     public interface BindCallback {
 
+        /**
+         * Called when a connection to the remote service has been established, now you can execute the remote call.
+         */
         void onBind();
 
+        /**
+         * Called when a connection to the remote service has been lost, any remote call will not execute.
+         */
         void onUnBind();
     }
 }

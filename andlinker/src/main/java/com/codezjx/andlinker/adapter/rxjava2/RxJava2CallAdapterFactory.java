@@ -11,7 +11,7 @@ import io.reactivex.Observable;
 import io.reactivex.Scheduler;
 
 /**
- * Created by codezjx on 2017/10/14.<br/>
+ * A {@linkplain CallAdapter.Factory call adapter} which uses RxJava 2 for creating observables.
  */
 public class RxJava2CallAdapterFactory extends CallAdapter.Factory {
 

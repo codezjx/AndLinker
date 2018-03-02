@@ -7,7 +7,7 @@ import static java.lang.annotation.ElementType.PARAMETER;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Created by codezjx on 2017/9/14.<br/>
+ * Indicate a parameter is a remote callback type.
  */
 @Target(PARAMETER)
 @Retention(RUNTIME)

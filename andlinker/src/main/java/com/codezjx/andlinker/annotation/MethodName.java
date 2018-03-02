@@ -7,7 +7,8 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Created by codezjx on 2017/9/14.<br/>
+ * Specify the remote service method name, usually use method name directly.
+ * Warning: method name value don't support overloading yet.
  */
 @Target(METHOD)
 @Retention(RUNTIME)

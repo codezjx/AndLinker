@@ -4,13 +4,13 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by codezjx on 2017/11/2.<br/>
+ * Parcelable parameter classes with @Out or @Inout annotation must inherit from this class.
  */
 public interface SuperParcelable extends Parcelable {
 
     /**
-     * Read and assign value from a Parcel.
-     * @param in The Parcel in which the object should be read.
+     * Reads the parcel contents into this object, so we can restore it.
+     * @param in The parcel to overwrite this object from.
      */
     void readFromParcel(Parcel in);
     

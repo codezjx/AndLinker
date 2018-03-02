@@ -7,7 +7,7 @@ import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
 
 /**
- * Created by codezjx on 2018/1/10.<br/>
+ * Default {@linkplain CallAdapter.Factory call adapter} which adapt {@link Call} to the execute result.
  */
 public class DefaultCallAdapterFactory extends CallAdapter.Factory {
 

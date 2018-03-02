@@ -7,7 +7,8 @@ import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Created by codezjx on 2017/9/14.<br/>
+ * Indicate a remote call does not block, it simply sends the transaction data and immediately
+ * returns, same as "oneway" tag in AIDL.
  */
 @Target(METHOD)
 @Retention(RUNTIME)

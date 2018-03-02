@@ -7,7 +7,7 @@ import static java.lang.annotation.ElementType.TYPE;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
 
 /**
- * Created by codezjx on 2017/9/14.<br/>
+ * Specify the remote service interface name, usually a full class name, eg: com.your.package.InterfaceName.
  */
 @Target(TYPE)
 @Retention(RUNTIME)
