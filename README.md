@@ -5,7 +5,7 @@
 
 ## Introduction
 
-AndLinker is a library for using AIDL like [Retrofit][retrofit] in Android App, allows IPC call seamlessly compose with [rxjava][rxjava] and [rxjava2][rxjava2] call adapters.
+AndLinker is a library for using AIDL like [Retrofit][retrofit] in Android App, allows IPC call seamlessly compose with [RxJava][rxjava] and [RxJava2][rxjava2] call adapters.
 
 
 ## Setup
@@ -26,9 +26,18 @@ dependencies {
 }
 ```
 
+## Features
+
+- Define normal Java Interface instead of AIDL Interface
+- Generates the IPC implementation of the remote service interface like [Retrofit][retrofit].
+- Support call adapter: `Call`, RxJava `Observable`, RxJava2 `Observable` & `Flowable`
+- Support all AIDL data types
+- Support all AIDL directional tag, either `in`, `out`, or `inout`
+- Support the AIDL `oneway` keyword
+
 ## Getting Started
 
-Defining a normal java Interface with `@ClassName` and `@MethodName` annotation.
+Define a normal java Interface with `@ClassName` and `@MethodName` annotation.
 
 ```java
 @ClassName("com.codezjx.example.IRemoteService")
@@ -61,7 +70,7 @@ private final IRemoteService mRemoteService = new IRemoteService() {
 };
 ```
 
-Create `AndLinkerBinder` and register interface implementation above, then expose the linker binder to clients.
+In your server app, create the `AndLinkerBinder` object and register interface implementation above, then expose the linker binder to clients.
 
 ```java
 private AndLinkerBinder mLinkerBinder;
@@ -76,13 +85,12 @@ public class RemoteService extends Service {
 
     @Override
     public IBinder onBind(Intent intent) {
-        // Return the linker binder
         return mLinkerBinder;
     }
 }
 ```
 
-In you client app, create the `AndLinker` object and generates an implementation of the `IRemoteService` interface.
+In your client app, create the `AndLinker` object and generates an implementation of the `IRemoteService` interface.
 
 ```java
 public class BindingActivity extends Activity {
@@ -107,6 +115,52 @@ public class BindingActivity extends Activity {
         super.onDestroy();
         mLinker.unbind();
     }
+}
+```
+
+Now your client app is ready, all methods from the created `IRemoteService` are IPC methods, call it directly!
+
+```java
+int pid = mRemoteService.getPid();
+mRemoteService.basicTypes(1, 2L, true, 3.0f, 4.0d, "str");
+```
+
+## Supported data types
+
+AndLinker supports all AIDL data types:
+- All primitive types in the Java programming language (such as `int`, `long`, `char`, `boolean`, and so on)
+- `String`
+- `CharSequence`
+- `Parcelable`
+- `List` (All elements in the List must be one of the supported data types in this list)
+- `Map` (All elements in the Map must be one of the supported data types in this list)
+
+## Advanced
+
+### Specify directional tag
+You can specify `@In`, `@Out`, or `@Inout` annotation for parameter, same as AIDL.
+
+```java
+@ClassName("com.codezjx.example.IRemoteService")
+public interface IRemoteService {
+
+    @MethodName("directionalParamMethod")
+    void directionalParamMethod(@In KeyEvent event, @Out int[] arr, @Inout Rect rect);
+}
+```
+
+**Note**: All non-primitive parameters require a directional annotation indicating which way the data goes. Either `@In`, `@Out`, or `@Inout`. Primitives are `@In` by default, and cannot be otherwise.
+
+### Use `@OneWay` annotation
+You can use `@OneWay` for a method which modifies the behavior of remote calls. When used, a remote call does not block, it simply sends the transaction data and immediately returns, same as AIDL.
+
+```java
+@ClassName("com.codezjx.example.IRemoteService")
+public interface IRemoteService {
+
+    @MethodName("onewayMethod")
+    @OneWay
+    void onewayMethod(String msg);
 }
 ```
 
