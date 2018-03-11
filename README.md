@@ -5,8 +5,7 @@
 
 ## Introduction
 
-AndLinker is a library for using AIDL like [Retrofit][retrofit] in Android App, allows IPC call seamlessly compose with [RxJava][rxjava] and [RxJava2][rxjava2] call adapters.
-
+AndLinker is a IPC(Inter-Process Communication) library for Android, which combines the features of [AIDL][aidl] and [Retrofit][retrofit]. Allows IPC call seamlessly compose with [RxJava][rxjava] and [RxJava2][rxjava2] call adapters. Project design and partial code refer to the great project [Retrofit][retrofit].
 
 ## Setup
 
@@ -29,15 +28,16 @@ dependencies {
 ## Features
 
 - Define normal Java Interface instead of AIDL Interface
-- Generates the IPC implementation of the remote service interface like [Retrofit][retrofit].
-- Support call adapter: `Call`, RxJava `Observable`, RxJava2 `Observable` & `Flowable`
+- Generates the IPC implementation of the remote service interface like [Retrofit][retrofit]
+- Support call adapter: `Call`, [RxJava][rxjava] `Observable`, [RxJava2][rxjava2] `Observable` & `Flowable`
+- Support remote service callback
 - Support all AIDL data types
 - Support all AIDL directional tag, either `in`, `out`, or `inout`
 - Support the AIDL `oneway` keyword
 
 ## Getting Started
 
-Define a normal java Interface with `@ClassName` and `@MethodName` annotation.
+Define a normal java Interface with `@ClassName` and `@MethodName` annotation, and implement the interface.
 
 ```java
 @ClassName("com.codezjx.example.IRemoteService")
@@ -50,11 +50,7 @@ public interface IRemoteService {
     void basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat,
             double aDouble, String aString);
 }
-```
 
-Implement the interface.
-
-```java
 private final IRemoteService mRemoteService = new IRemoteService() {
     
     @Override
@@ -137,31 +133,70 @@ AndLinker supports all AIDL data types:
 
 ## Advanced
 
-### Specify directional tag
-You can specify `@In`, `@Out`, or `@Inout` annotation for parameter, same as AIDL.
+### Call Adapters
+You can modify the client side app's remote service interface, wrap the return type of the method.
 
 ```java
 @ClassName("com.codezjx.example.IRemoteService")
 public interface IRemoteService {
 
-    @MethodName("directionalParamMethod")
-    void directionalParamMethod(@In KeyEvent event, @Out int[] arr, @Inout Rect rect);
+    @MethodName("getPid")
+    Observable<Integer> getPid();
+
+    @MethodName("basicTypes")
+    Call<Void> basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat, 
+        double aDouble, String aString);
 }
 ```
 
-**Note**: All non-primitive parameters require a directional annotation indicating which way the data goes. Either `@In`, `@Out`, or `@Inout`. Primitives are `@In` by default, and cannot be otherwise.
+Register the call adapter factory in `AndLinker.Builder`, the remaining steps are consistent with [Retrofit][retrofit].
+
+```java
+new AndLinker.Builder(this)
+        ...
+        .addCallAdapterFactory(OriginalCallAdapterFactory.create()) // Basic
+        .addCallAdapterFactory(RxJava2CallAdapterFactory.create())  // RxJava2
+        .build();
+```
+
+### Deal with callbacks
+Define callback interface to receive callbacks from the remote service with `@ClassName` and `@MethodName` annotation.
+
+```java
+@ClassName("com.codezjx.example.RemoteCallback")
+public interface RemoteCallback {
+
+    @MethodName("onValueChange")
+    void onValueChange(int value);
+}
+```
+
+Use `@Callback` annotation for callback parameter, and that's it!
+
+```java
+@MethodName("registerCallback")
+void registerCallback(@Callback RemoteCallback callback);
+```
+
+### Specify directional tag
+You can specify `@In`, `@Out`, or `@Inout` annotation for parameter, indicating which way the data goes, same as AIDL.
+
+```java
+@MethodName("directionalParamMethod")
+void directionalParamMethod(@In KeyEvent event, @Out int[] arr, @Inout Rect rect);
+```
+
+>**Caution**:
+>- All non-primitive parameters require a directional annotation indicating which way the data goes. Either `@In`, `@Out`, or `@Inout`. Primitives are `@In` by default, and cannot be otherwise.
+>- Parcelable parameter with `@Out` or `@Inout` annotation must implements from `SuperParcelable`, or you must add method `public void readFromParcel(Parcel in)` by yourself.
 
 ### Use `@OneWay` annotation
 You can use `@OneWay` for a method which modifies the behavior of remote calls. When used, a remote call does not block, it simply sends the transaction data and immediately returns, same as AIDL.
 
 ```java
-@ClassName("com.codezjx.example.IRemoteService")
-public interface IRemoteService {
-
-    @MethodName("onewayMethod")
-    @OneWay
-    void onewayMethod(String msg);
-}
+@MethodName("onewayMethod")
+@OneWay
+void onewayMethod(String msg);
 ```
 
 ## Feedback
@@ -188,3 +223,4 @@ Any issues or PRs are welcome!
 [retrofit]: https://github.com/square/retrofit
 [rxjava]: https://github.com/ReactiveX/RxJava/tree/1.x
 [rxjava2]: https://github.com/ReactiveX/RxJava/tree/2.x
+[aidl]: https://developer.android.com/guide/components/aidl.html
