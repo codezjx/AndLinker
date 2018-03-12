@@ -6,12 +6,12 @@ ext {
     libraryName = 'AndLinker'
     artifact = 'andlinker'
 
-    libraryDescription = 'AndLinker is a library for using AIDL like Retrofit in Android App.'
+    libraryDescription = 'AndLinker is a IPC library for Android, which combines the features of AIDL and Retrofit. Allows IPC call seamlessly compose with rxjava and rxjava2 call adapters.'
 
     siteUrl = 'https://github.com/codezjx/AndLinker'
     gitUrl = 'https://github.com/codezjx/AndLinker.git'
 
-    libraryVersion = '0.6.0'
+    libraryVersion = '0.7.0'
 
     developerId = 'codezjx'
     developerName = 'codezjx'

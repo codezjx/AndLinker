@@ -9,7 +9,7 @@ AndLinker is a IPC(Inter-Process Communication) library for Android, which combi
 
 ## Setup
 
-Add the `jcenter` repository in your root `build.gradle`.
+Add the `jcenter()` repository in your root `build.gradle`.
 ```groovy
 allprojects {
     repositories {
@@ -21,7 +21,7 @@ allprojects {
 Add the dependencies in your app level `build.gradle`.
 ```groovy
 dependencies {
-    implementation 'com.codezjx.library:andlinker:0.6.0'
+    implementation 'com.codezjx.library:andlinker:0.7.0'
 }
 ```
 
