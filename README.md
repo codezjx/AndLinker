@@ -37,10 +37,10 @@ dependencies {
 
 ## Getting Started
 
-Define a normal java Interface with `@ClassName` and `@MethodName` annotation, and implement the interface.
+Define a normal java Interface with `@ClassName` and `@MethodName` annotation, and implements the interface.
 
 ```java
-@ClassName("com.codezjx.example.IRemoteService")
+@ClassName("com.example.andlinker.IRemoteService")
 public interface IRemoteService {
 
     @MethodName("getPid")
@@ -98,8 +98,8 @@ public class BindingActivity extends Activity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         mLinker = new AndLinker.Builder(this)
-                .packageName("com.codezjx.example")
-                .action("com.codezjx.example.REMOTE_SERVICE_ACTION")
+                .packageName("com.example.andlinker")
+                .action("com.example.andlinker.REMOTE_SERVICE_ACTION")
                 .build();
         mLinker.bind();
 
@@ -137,7 +137,7 @@ AndLinker supports all AIDL data types:
 You can modify the client side app's remote service interface, wrap the return type of the method.
 
 ```java
-@ClassName("com.codezjx.example.IRemoteService")
+@ClassName("com.example.andlinker.IRemoteService")
 public interface IRemoteService {
 
     @MethodName("getPid")
@@ -163,19 +163,31 @@ new AndLinker.Builder(this)
 Define callback interface to receive callbacks from the remote service with `@ClassName` and `@MethodName` annotation.
 
 ```java
-@ClassName("com.codezjx.example.RemoteCallback")
-public interface RemoteCallback {
+@ClassName("com.example.andlinker.IRemoteCallback")
+public interface IRemoteCallback {
 
     @MethodName("onValueChange")
     void onValueChange(int value);
 }
 ```
 
-Use `@Callback` annotation for callback parameter, and that's it!
+Use `@Callback` annotation for callback parameter.
 
 ```java
 @MethodName("registerCallback")
-void registerCallback(@Callback RemoteCallback callback);
+void registerCallback(@Callback IRemoteCallback callback);
+```
+
+In your client app, implements the remote callback and register to `AndLinker`, and that's it!
+
+```java
+private final IRemoteCallback mRemoteCallback = new IRemoteCallback() {
+    @Override
+    public void onValueChange(int value) {
+        // Invoke when server side callback
+    }
+};
+mLinker.registerObject(mRemoteCallback);
 ```
 
 ### Specify directional tag
