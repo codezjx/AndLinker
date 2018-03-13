@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.example.andlinker.BindingActivity">
+
+    <Button
+        android:id="@+id/btn_pid"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Get server pid"/>
+    
+    <Button
+        android:id="@+id/btn_basic_types"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Basic types"
+        app:layout_constraintTop_toBottomOf="@id/btn_pid"/>
+    
+    <Button
+        android:id="@+id/btn_callback"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Callback"
+        app:layout_constraintTop_toBottomOf="@id/btn_basic_types"/>
+
+    <Button
+        android:id="@+id/btn_directional"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Directional tag"
+        app:layout_constraintTop_toBottomOf="@id/btn_callback"/>
+    
+    <Button
+        android:id="@+id/btn_oneway"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Oneway"
+        app:layout_constraintTop_toBottomOf="@id/btn_directional"/>
+
+</android.support.constraint.ConstraintLayout>
