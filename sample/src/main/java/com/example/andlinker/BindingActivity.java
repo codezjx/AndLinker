@@ -7,9 +7,20 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.codezjx.andlinker.AndLinker;
+import com.codezjx.andlinker.Call;
+import com.codezjx.andlinker.Callback;
+import com.codezjx.andlinker.adapter.OriginalCallAdapterFactory;
+import com.codezjx.andlinker.adapter.rxjava2.RxJava2CallAdapterFactory;
+import com.codezjx.andlinker.annotation.ClassName;
+import com.codezjx.andlinker.annotation.MethodName;
+
+import java.util.List;
 
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.schedulers.Schedulers;
 
 public class BindingActivity extends AppCompatActivity {
 
@@ -18,6 +29,7 @@ public class BindingActivity extends AppCompatActivity {
 
     private AndLinker mLinker;
     private IRemoteService mRemoteService;
+    private IRemoteTask mRemoteTask;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,14 +40,20 @@ public class BindingActivity extends AppCompatActivity {
         mLinker = new AndLinker.Builder(this)
                 .packageName(REMOTE_SERVICE_PKG)
                 .action(REMOTE_SERVICE_ACTION)
+                // Specify the callback executor by yourself
+                //.addCallAdapterFactory(OriginalCallAdapterFactory.create(callbackExecutor))
+                .addCallAdapterFactory(OriginalCallAdapterFactory.create()) // Basic
+                .addCallAdapterFactory(RxJava2CallAdapterFactory.create())  // RxJava2
                 .build();
         mLinker.bind();
         mLinker.registerObject(mRemoteCallback);
 
         mRemoteService = mLinker.create(IRemoteService.class);
+        mRemoteTask = mLinker.create(IRemoteTask.class);
     }
 
-    @OnClick({R.id.btn_pid, R.id.btn_basic_types, R.id.btn_callback, R.id.btn_directional, R.id.btn_oneway})
+    @OnClick({R.id.btn_pid, R.id.btn_basic_types, R.id.btn_call_adapter, R.id.btn_rxjava2_call_adapter,
+            R.id.btn_callback, R.id.btn_directional, R.id.btn_oneway})
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.btn_pid:
@@ -44,6 +62,32 @@ public class BindingActivity extends AppCompatActivity {
                 break;
             case R.id.btn_basic_types:
                 mRemoteService.basicTypes(1, 2L, true, 3.0f, 4.0d, "str");
+                break;
+            case R.id.btn_call_adapter:
+                Call<Integer> call = mRemoteTask.remoteCalculate(10, 20);
+                
+                // Synchronous Request
+                // int result = call.execute();
+                // Log.d("BindingActivity", "remoteCalculate() result:" + result);
+
+                // Asynchronous Request
+                call.enqueue(new Callback<Integer>() {
+                    @Override
+                    public void onResponse(Call<Integer> call, Integer response) {
+                        Toast.makeText(BindingActivity.this, "remoteCalculate() onResponse: " + response, Toast.LENGTH_SHORT).show();
+                    }
+
+                    @Override
+                    public void onFailure(Call<Integer> call, Throwable t) {
+                        Toast.makeText(BindingActivity.this, "remoteCalculate() failure: " + t.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                break;
+            case R.id.btn_rxjava2_call_adapter:
+                mRemoteTask.getDatas()
+                        .subscribeOn(Schedulers.io())
+                        .observeOn(AndroidSchedulers.mainThread())
+                        .subscribe(datas -> Toast.makeText(this, "getDatas() return: " + datas, Toast.LENGTH_LONG).show());
                 break;
             case R.id.btn_callback:
                 mRemoteService.registerCallback(mRemoteCallback);
@@ -78,4 +122,19 @@ public class BindingActivity extends AppCompatActivity {
             Toast.makeText(BindingActivity.this, "Server callback value: " + value, Toast.LENGTH_SHORT).show();
         }
     };
+
+
+    /**
+     * Copy the original interface, wrap the return type of the method, keep the original @ClassName and @MethodName.
+     */
+    @ClassName("com.example.andlinker.IRemoteTask")
+    public interface IRemoteTask {
+
+        @MethodName("remoteCalculate")
+        Call<Integer> remoteCalculate(int a, int b);
+
+        @MethodName("getDatas")
+        Observable<List<ParcelableObj>> getDatas();
+
+    }
 }

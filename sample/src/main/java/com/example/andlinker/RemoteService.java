@@ -11,7 +11,9 @@ import android.widget.Toast;
 
 import com.codezjx.andlinker.AndLinkerBinder;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class RemoteService extends Service {
 
@@ -25,6 +27,7 @@ public class RemoteService extends Service {
         Log.d(TAG, "Service onCreate()");
         mLinkerBinder = AndLinkerBinder.Factory.newBinder();
         mLinkerBinder.registerObject(mRemoteService);
+        mLinkerBinder.registerObject(mRemoteTask);
     }
 
     @Override
@@ -75,6 +78,35 @@ public class RemoteService extends Service {
                 e.printStackTrace();
             }
             Log.d(TAG, "After oneway method server.");
+        }
+    };
+    
+    private final IRemoteTask mRemoteTask = new IRemoteTask() {
+        @Override
+        public int remoteCalculate(int a, int b) {
+            Log.d(TAG, "Call remoteCalculate(): " + a + ", " + b);
+            // Simulate slow task
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            return (a + b) * 100;
+        }
+
+        @Override
+        public List<ParcelableObj> getDatas() {
+            Log.d(TAG, "Call getDatas().");
+            // Simulate slow task
+            try {
+                Thread.sleep(3000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            ArrayList<ParcelableObj> datas = new ArrayList<>();
+            datas.add(new ParcelableObj(1, 11.1f, "hello"));
+            datas.add(new ParcelableObj(2, 22.2f, "world"));
+            return datas;
         }
     };
 }

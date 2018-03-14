@@ -19,13 +19,27 @@
         android:layout_height="wrap_content"
         android:text="Basic types"
         app:layout_constraintTop_toBottomOf="@id/btn_pid"/>
+
+    <Button
+        android:id="@+id/btn_call_adapter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Call adapter"
+        app:layout_constraintTop_toBottomOf="@id/btn_basic_types"/>
+
+    <Button
+        android:id="@+id/btn_rxjava2_call_adapter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="RxJava2 call adapter"
+        app:layout_constraintTop_toBottomOf="@id/btn_call_adapter"/>
     
     <Button
         android:id="@+id/btn_callback"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Callback"
-        app:layout_constraintTop_toBottomOf="@id/btn_basic_types"/>
+        app:layout_constraintTop_toBottomOf="@id/btn_rxjava2_call_adapter"/>
 
     <Button
         android:id="@+id/btn_directional"

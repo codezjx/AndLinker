@@ -29,6 +29,12 @@ public class ParcelableObj implements SuperParcelable {
     public ParcelableObj() {
     }
 
+    public ParcelableObj(int type, float value, String msg) {
+        mType = type;
+        mValue = value;
+        mMsg = msg;
+    }
+
     protected ParcelableObj(Parcel in) {
         readFromParcel(in);
     }
