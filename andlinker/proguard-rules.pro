@@ -19,3 +19,10 @@
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile
+
+-dontwarn com.codezjx.andlinker.adapter.**
+-keep class * implements android.os.Parcelable {*;}
+-keep @com.codezjx.andlinker.annotation.ClassName class *
+-keepclassmembers class * {
+    @com.codezjx.andlinker.annotation.MethodName <methods>;
+}
