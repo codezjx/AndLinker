@@ -1,6 +1,5 @@
 package com.codezjx.andlinker;
 
-import com.codezjx.andlinker.annotation.ClassName;
 import com.codezjx.andlinker.annotation.In;
 import com.codezjx.andlinker.annotation.Inout;
 import com.codezjx.andlinker.annotation.Out;
@@ -25,11 +24,7 @@ interface ParameterHandler<T> {
         @Override
         public void apply(RequestBuilder builder, T value, int index) {
             Logger.d("CallbackHandler", "ParameterHandler mParamType:" + mParamType + " value:" + value);
-            ClassName annotation = mParamType.getAnnotation(ClassName.class);
-            String className = (annotation != null) ? annotation.value() : "";
-            if (Utils.isStringBlank(className)) {
-                throw new IllegalArgumentException("Callback type must provide @ClassName");
-            }
+            String className = mParamType.getSimpleName();
             CallbackTypeWrapper wrapper = new CallbackTypeWrapper(className);
             builder.applyWrapper(index, wrapper);
         }

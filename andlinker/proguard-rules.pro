@@ -21,8 +21,7 @@
 #-renamesourcefileattribute SourceFile
 
 -dontwarn com.codezjx.andlinker.adapter.**
--keep class * implements android.os.Parcelable {*;}
--keep @com.codezjx.andlinker.annotation.ClassName class *
--keepclassmembers class * {
-    @com.codezjx.andlinker.annotation.MethodName <methods>;
+-keep class * implements android.os.Parcelable {
+    public void readFromParcel(android.os.Parcel);
 }
+-keep @com.codezjx.andlinker.annotation.RemoteInterface class * {*;}

@@ -4,8 +4,7 @@ import android.os.Binder;
 import android.os.RemoteCallbackList;
 import android.os.RemoteException;
 
-import com.codezjx.andlinker.annotation.ClassName;
-import com.codezjx.andlinker.annotation.MethodName;
+import com.codezjx.andlinker.annotation.RemoteInterface;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.InvocationHandler;
@@ -31,14 +30,14 @@ final class Invoker {
     }
 
     private void handleCallbackClass(Class<?> clazz, boolean isRegister) {
-        ClassName className = clazz.getAnnotation(ClassName.class);
-        if (className == null) {
-            throw new IllegalArgumentException("Callback interface doesn't has any annotation.");
+        if (!clazz.isAnnotationPresent(RemoteInterface.class)) {
+            throw new IllegalArgumentException("Callback interface doesn't has @RemoteInterface annotation.");
         }
+        String className = clazz.getSimpleName();
         if (isRegister) {
-            mCallbackClassTypes.putIfAbsent(className.value(), clazz);
+            mCallbackClassTypes.putIfAbsent(className, clazz);
         } else {
-            mCallbackClassTypes.remove(className.value());
+            mCallbackClassTypes.remove(className);
         }
     }
 
@@ -51,11 +50,11 @@ final class Invoker {
             throw new IllegalArgumentException("Remote object must extend just one interface.");
         }
         Class<?> clazz = interfaces[0];
-        ClassName classNameAnnotation = clazz.getAnnotation(ClassName.class);
-        if (classNameAnnotation == null) {
-            throw new IllegalArgumentException("Interface doesn't has any annotation.");
+        if (!clazz.isAnnotationPresent(RemoteInterface.class)) {
+            throw new IllegalArgumentException("Interface doesn't has @RemoteInterface annotation.");
         }
         // Cache all annotation method
+        String clsName = clazz.getSimpleName();
         Method[] methods = clazz.getDeclaredMethods();
         for (Method method : methods) {
             // The compiler sometimes creates synthetic bridge methods as part of the
@@ -65,21 +64,17 @@ final class Invoker {
             if (method.isBridge()) {
                 continue;
             }
-            MethodName methodNameAnnotation = method.getAnnotation(MethodName.class);
-            if (methodNameAnnotation != null) {
-                String clsName = classNameAnnotation.value();
-                String methodName = methodNameAnnotation.value();
-                String key = createMethodExecutorKey(clsName, methodName);
-                if (isRegister) {
-                    MethodExecutor executor = new MethodExecutor(target, method);
-                    MethodExecutor preExecutor = mMethodExecutors.putIfAbsent(key, executor);
-                    if (preExecutor != null) {
-                        throw new IllegalStateException("Key conflict with class:" + clsName + " method:" + methodName
-                                + ". Please try another class/method name with annotation @ClassName/@MethodName.");
-                    }
-                } else {
-                    mMethodExecutors.remove(key);
+            String methodName = method.getName();
+            String key = createMethodExecutorKey(clsName, methodName);
+            if (isRegister) {
+                MethodExecutor executor = new MethodExecutor(target, method);
+                MethodExecutor preExecutor = mMethodExecutors.putIfAbsent(key, executor);
+                if (preExecutor != null) {
+                    throw new IllegalStateException("Key conflict with class:" + clsName + " method:" + methodName
+                            + ". Please try another class/method name.");
                 }
+            } else {
+                mMethodExecutors.remove(key);
             }
             // Cache callback class if exist
             Class<?>[] paramCls = method.getParameterTypes();
@@ -156,7 +151,7 @@ final class Invoker {
                             int cookiePid = (int) mCallbackList.getBroadcastCookie(i);
                             if (cookiePid == pid) {
                                 try {
-                                    Request request = createCallbackRequest(parseClassName(service), parseMethodName(method), args);
+                                    Request request = createCallbackRequest(service.getSimpleName(), method.getName(), args);
                                     Response response = mCallbackList.getBroadcastItem(i).callback(request);
                                     result = response.getResult();
                                     if (response.getStatusCode() != Response.STATUS_CODE_SUCCESS) {
@@ -180,24 +175,6 @@ final class Invoker {
             wrappers[i] = new InTypeWrapper(args[i], args[i].getClass());
         }
         return new Request(targetClass, methodName, wrappers);
-    }
-
-    private String parseClassName(Class<?> clazz) {
-        ClassName className = clazz.getAnnotation(ClassName.class);
-        String classNameStr = "";
-        if (className != null) {
-            classNameStr = className.value();
-        }
-        return classNameStr;
-    }
-
-    private String parseMethodName(Method method) {
-        MethodName methodName = method.getAnnotation(MethodName.class);
-        String methodNameStr = "";
-        if (methodName != null) {
-            methodNameStr = methodName.value();
-        }
-        return methodNameStr;
     }
 
     private Class<?> getCallbackClass(String className) {

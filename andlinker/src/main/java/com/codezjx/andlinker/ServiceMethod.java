@@ -1,10 +1,8 @@
 package com.codezjx.andlinker;
 
 import com.codezjx.andlinker.annotation.Callback;
-import com.codezjx.andlinker.annotation.ClassName;
 import com.codezjx.andlinker.annotation.In;
 import com.codezjx.andlinker.annotation.Inout;
-import com.codezjx.andlinker.annotation.MethodName;
 import com.codezjx.andlinker.annotation.OneWay;
 import com.codezjx.andlinker.annotation.Out;
 
@@ -78,10 +76,14 @@ final class ServiceMethod {
         
         ServiceMethod build() {
             mCallAdapter = createCallAdapter();
-            parseClassName(mMethod);
+            mClassName = mMethod.getDeclaringClass().getSimpleName();
+            mMethodName = mMethod.getName();
 
             for (Annotation annotation : mMethodAnnotations) {
-                parseMethodAnnotation(annotation);
+                if (annotation instanceof OneWay) {
+                    mOneWay = true;
+                    break;
+                }
             }
 
             int parameterCount = mParameterAnnotationsArray.length;
@@ -100,13 +102,6 @@ final class ServiceMethod {
             return new ServiceMethod(this);
         }
 
-        private void parseClassName(Method method) {
-            ClassName className = method.getDeclaringClass().getAnnotation(ClassName.class);
-            if (className != null) {
-                mClassName = className.value();
-            }
-        }
-
         private CallAdapter createCallAdapter() {
             Type returnType = mMethod.getGenericReturnType();
             if (Utils.hasUnresolvableType(returnType)) {
@@ -119,14 +114,6 @@ final class ServiceMethod {
                 return mLinker.findCallAdapter(returnType, annotations);
             } catch (RuntimeException e) { // Wide exception range because factories are user code.
                 throw methodError(e, "Unable to create call adapter for %s", returnType);
-            }
-        }
-
-        private void parseMethodAnnotation(Annotation annotation) {
-            if (annotation instanceof MethodName) {
-                mMethodName = ((MethodName) annotation).value();
-            } else if (annotation instanceof OneWay) {
-                mOneWay = true;
             }
         }
 
