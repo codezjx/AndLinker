@@ -11,8 +11,7 @@ import com.codezjx.andlinker.Call;
 import com.codezjx.andlinker.Callback;
 import com.codezjx.andlinker.adapter.OriginalCallAdapterFactory;
 import com.codezjx.andlinker.adapter.rxjava2.RxJava2CallAdapterFactory;
-import com.codezjx.andlinker.annotation.ClassName;
-import com.codezjx.andlinker.annotation.MethodName;
+import com.codezjx.andlinker.annotation.RemoteInterface;
 
 import java.util.List;
 
@@ -125,15 +124,13 @@ public class BindingActivity extends AppCompatActivity {
 
 
     /**
-     * Copy the original interface, wrap the return type of the method, keep the original @ClassName and @MethodName.
+     * Copy the original interface, wrap the return type of the method, keep the original interface name and method name.
      */
-    @ClassName("com.example.andlinker.IRemoteTask")
+    @RemoteInterface
     public interface IRemoteTask {
 
-        @MethodName("remoteCalculate")
         Call<Integer> remoteCalculate(int a, int b);
 
-        @MethodName("getDatas")
         Observable<List<ParcelableObj>> getDatas();
 
     }

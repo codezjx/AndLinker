@@ -1,12 +1,11 @@
 package com.codezjx.andlinker;
 
 import android.os.Parcel;
-import android.os.Parcelable;
 
 /**
  * Created by codezjx on 2017/9/13.<br/>
  */
-final class Response implements Parcelable {
+final class Response implements SuperParcelable {
     
     static final int STATUS_CODE_SUCCESS = 200;
     static final int STATUS_CODE_ILLEGAL_ACCESS = 400;
@@ -35,10 +34,15 @@ final class Response implements Parcelable {
         dest.writeValue(mResult);
     }
 
-    private Response(Parcel in) {
+    @Override
+    public void readFromParcel(Parcel in) {
         mStatusCode = in.readInt();
         mStatusMessage = in.readString();
         mResult = in.readValue(getClass().getClassLoader());
+    }
+
+    private Response(Parcel in) {
+        readFromParcel(in);
     }
 
     public static final Creator<Response> CREATOR = new Creator<Response>() {
