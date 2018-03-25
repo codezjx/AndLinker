@@ -25,7 +25,7 @@ allprojects {
 Add the dependencies in your app level `build.gradle`.
 ```groovy
 dependencies {
-    implementation 'com.codezjx.library:andlinker:0.7.0'
+    implementation 'com.codezjx.library:andlinker:0.7.1'
 }
 ```
 
