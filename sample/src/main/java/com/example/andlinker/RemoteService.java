@@ -36,6 +36,14 @@ public class RemoteService extends Service {
         return mLinkerBinder;
     }
 
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.d(TAG, "Service onDestroy()");
+        mLinkerBinder.unRegisterObject(mRemoteService);
+        mLinkerBinder.unRegisterObject(mRemoteTask);
+    }
+
     private final IRemoteService mRemoteService = new IRemoteService() {
 
         @Override

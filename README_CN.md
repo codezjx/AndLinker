@@ -33,16 +33,14 @@ dependencies {
 
 ## 快速开始
 
-使用注解`@ClassName`和`@MethodName`修饰远程服务接口`IRemoteService`，并实现它
+使用注解`@RemoteInterface`修饰远程服务接口`IRemoteService`，并实现它
 
 ```java
-@ClassName("com.example.andlinker.IRemoteService")
+@RemoteInterface
 public interface IRemoteService {
 
-    @MethodName("getPid")
     int getPid();
 
-    @MethodName("basicTypes")
     void basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat,
             double aDouble, String aString);
 }
@@ -133,13 +131,11 @@ AndLinker支持AIDL所有数据类型：
 在客户端App中，你可以copy并修改远程服务接口，包装方法的返回值
 
 ```java
-@ClassName("com.example.andlinker.IRemoteService")
+@RemoteInterface
 public interface IRemoteService {
 
-    @MethodName("getPid")
     Observable<Integer> getPid();
 
-    @MethodName("basicTypes")
     Call<Void> basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat, 
         double aDouble, String aString);
 }
@@ -156,13 +152,12 @@ new AndLinker.Builder(this)
 ```
 
 ### 处理远程服务接口回调
-使用`@ClassName`和`@MethodName`注解修饰远程服务回调接口`IRemoteCallback`
+使用`@RemoteInterface`注解修饰远程服务回调接口`IRemoteCallback`
 
 ```java
-@ClassName("com.example.andlinker.IRemoteCallback")
+@RemoteInterface
 public interface IRemoteCallback {
 
-    @MethodName("onValueChange")
     void onValueChange(int value);
 }
 ```
@@ -170,7 +165,6 @@ public interface IRemoteCallback {
 在远程方法中使用`@Callback`注解修饰callback参数
 
 ```java
-@MethodName("registerCallback")
 void registerCallback(@Callback IRemoteCallback callback);
 ```
 
@@ -190,7 +184,6 @@ mLinker.registerObject(mRemoteCallback);
 你可以为远程方法的参数指定`@In`，`@Out`，或者`@Inout`注解，它标记了数据在底层Binder中的流向，跟AIDL中的用法一致
 
 ```java
-@MethodName("directionalParamMethod")
 void directionalParamMethod(@In KeyEvent event, @Out int[] arr, @Inout Rect rect);
 ```
 
@@ -202,9 +195,17 @@ void directionalParamMethod(@In KeyEvent event, @Out int[] arr, @Inout Rect rect
 你可以在远程方法上使用`@OneWay`注解，这会修改远程方法调用的行为。当使用它时，远程方法调用不会堵塞，它只是简单的发送数据并立即返回，跟AIDL中的用法一致
 
 ```java
-@MethodName("onewayMethod")
 @OneWay
 void onewayMethod(String msg);
+```
+
+## Proguard配置
+
+在`proguard-rules.pro`文件中添加如下混淆规则，将需要序列化/反序列化的model类给keep掉
+```
+-keep class com.example.andlinker.model.** {
+    public void readFromParcel(android.os.Parcel);
+}
 ```
 
 ## 反馈

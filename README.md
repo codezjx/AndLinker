@@ -41,16 +41,14 @@ dependencies {
 
 ## Getting Started
 
-Define a normal java Interface with `@ClassName` and `@MethodName` annotation, and implements the interface.
+Define a normal java Interface with `@RemoteInterface` annotation, and implements the interface.
 
 ```java
-@ClassName("com.example.andlinker.IRemoteService")
+@RemoteInterface
 public interface IRemoteService {
 
-    @MethodName("getPid")
     int getPid();
 
-    @MethodName("basicTypes")
     void basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat,
             double aDouble, String aString);
 }
@@ -141,13 +139,11 @@ AndLinker supports all AIDL data types:
 You can modify the client side app's remote service interface, wrap the return type of the method.
 
 ```java
-@ClassName("com.example.andlinker.IRemoteService")
+@RemoteInterface
 public interface IRemoteService {
 
-    @MethodName("getPid")
     Observable<Integer> getPid();
 
-    @MethodName("basicTypes")
     Call<Void> basicTypes(int anInt, long aLong, boolean aBoolean, float aFloat, 
         double aDouble, String aString);
 }
@@ -164,13 +160,12 @@ new AndLinker.Builder(this)
 ```
 
 ### Deal with callbacks
-Define callback interface to receive callbacks from the remote service with `@ClassName` and `@MethodName` annotation.
+Define callback interface to receive callbacks from the remote service with `@RemoteInterface` annotation.
 
 ```java
-@ClassName("com.example.andlinker.IRemoteCallback")
+@RemoteInterface
 public interface IRemoteCallback {
 
-    @MethodName("onValueChange")
     void onValueChange(int value);
 }
 ```
@@ -178,7 +173,6 @@ public interface IRemoteCallback {
 Use `@Callback` annotation for callback parameter.
 
 ```java
-@MethodName("registerCallback")
 void registerCallback(@Callback IRemoteCallback callback);
 ```
 
@@ -198,7 +192,6 @@ mLinker.registerObject(mRemoteCallback);
 You can specify `@In`, `@Out`, or `@Inout` annotation for parameter, indicating which way the data goes, same as AIDL.
 
 ```java
-@MethodName("directionalParamMethod")
 void directionalParamMethod(@In KeyEvent event, @Out int[] arr, @Inout Rect rect);
 ```
 
@@ -210,9 +203,17 @@ void directionalParamMethod(@In KeyEvent event, @Out int[] arr, @Inout Rect rect
 You can use `@OneWay` for a method which modifies the behavior of remote calls. When used, a remote call does not block, it simply sends the transaction data and immediately returns, same as AIDL.
 
 ```java
-@MethodName("onewayMethod")
 @OneWay
 void onewayMethod(String msg);
+```
+
+## Proguard Configuration
+
+Add following rules to `proguard-rules.pro` file, keep classes that will be serialized/deserialized over AndLinker.
+```
+-keep class com.example.andlinker.model.** {
+    public void readFromParcel(android.os.Parcel);
+}
 ```
 
 ## Feedback

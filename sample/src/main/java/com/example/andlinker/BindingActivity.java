@@ -111,6 +111,7 @@ public class BindingActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mLinker.unRegisterObject(mRemoteCallback);
         mLinker.unbind();
     }
 
