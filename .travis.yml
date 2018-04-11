@@ -14,7 +14,7 @@ android:
     - android-26
     
     # The BuildTools version used by your project
-    - build-tools-26.0.2
+    - build-tools-27.0.3
     
     # Additional components
     - extra-android-support
