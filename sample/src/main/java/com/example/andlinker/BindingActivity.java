@@ -3,6 +3,7 @@ package com.example.andlinker;
 import android.graphics.Rect;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -21,8 +22,9 @@ import io.reactivex.Observable;
 import io.reactivex.android.schedulers.AndroidSchedulers;
 import io.reactivex.schedulers.Schedulers;
 
-public class BindingActivity extends AppCompatActivity {
+public class BindingActivity extends AppCompatActivity implements AndLinker.BindCallback {
 
+    private static final String TAG = "BindingActivity";
     private static final String REMOTE_SERVICE_PKG = "com.example.andlinker";
     public static final String REMOTE_SERVICE_ACTION = "com.example.andlinker.REMOTE_SERVICE_ACTION";
 
@@ -44,16 +46,30 @@ public class BindingActivity extends AppCompatActivity {
                 .addCallAdapterFactory(OriginalCallAdapterFactory.create()) // Basic
                 .addCallAdapterFactory(RxJava2CallAdapterFactory.create())  // RxJava2
                 .build();
-        mLinker.bind();
+        mLinker.setBindCallback(this);
         mLinker.registerObject(mRemoteCallback);
-
+        mLinker.bind();
+    }
+    
+    @Override
+    public void onBind() {
+        Log.d(TAG, "AndLinker onBind()");
         mRemoteService = mLinker.create(IRemoteService.class);
         mRemoteTask = mLinker.create(IRemoteTask.class);
+    }
+
+    @Override
+    public void onUnBind() {
+        Log.d(TAG, "AndLinker onUnBind()");
     }
 
     @OnClick({R.id.btn_pid, R.id.btn_basic_types, R.id.btn_call_adapter, R.id.btn_rxjava2_call_adapter,
             R.id.btn_callback, R.id.btn_directional, R.id.btn_oneway})
     public void onClick(View view) {
+        if (mRemoteService == null || mRemoteTask == null || !mLinker.isBind()) {
+            Log.e(TAG, "AndLinker was not bind to the service.");
+            return;
+        }
         switch (view.getId()) {
             case R.id.btn_pid:
                 Toast.makeText(this, "Server pid: " + mRemoteService.getPid(), Toast.LENGTH_SHORT).show();
@@ -111,6 +127,7 @@ public class BindingActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        mLinker.setBindCallback(null);
         mLinker.unRegisterObject(mRemoteCallback);
         mLinker.unbind();
     }
