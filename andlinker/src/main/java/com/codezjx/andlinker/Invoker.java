@@ -170,8 +170,9 @@ final class Invoker {
     }
 
     private Request createCallbackRequest(String targetClass, String methodName, Object[] args) {
-        BaseTypeWrapper[] wrappers = new BaseTypeWrapper[args.length];
-        for (int i = 0; i < args.length; i++) {
+        int argsLength = args != null ? args.length : 0;
+        BaseTypeWrapper[] wrappers = new BaseTypeWrapper[argsLength];
+        for (int i = 0; i < argsLength; i++) {
             wrappers[i] = new InTypeWrapper(args[i], args[i].getClass());
         }
         return new Request(targetClass, methodName, wrappers);
