@@ -8,5 +8,7 @@ import com.codezjx.andlinker.annotation.RemoteInterface;
 @RemoteInterface
 public interface IRemoteCallback {
 
+    void onStart();
+
     void onValueChange(int value);
 }

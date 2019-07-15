@@ -61,6 +61,7 @@ public class RemoteService extends Service {
 
         @Override
         public void registerCallback(IRemoteCallback callback) {
+            callback.onStart();
             callback.onValueChange(1234);
         }
 

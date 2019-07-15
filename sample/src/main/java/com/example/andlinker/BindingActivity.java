@@ -133,6 +133,12 @@ public class BindingActivity extends AppCompatActivity implements AndLinker.Bind
     }
 
     private final IRemoteCallback mRemoteCallback = new IRemoteCallback() {
+        
+        @Override
+        public void onStart() {
+            Log.d(TAG, "Server callback onStart!");
+        }
+
         @Override
         public void onValueChange(int value) {
             // Invoke when server side callback
