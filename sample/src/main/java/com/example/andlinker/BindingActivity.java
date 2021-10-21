@@ -38,6 +38,7 @@ public class BindingActivity extends AppCompatActivity implements AndLinker.Bind
         setContentView(R.layout.activity_binding);
         ButterKnife.bind(this);
 
+        AndLinker.enableLogger(true);
         mLinker = new AndLinker.Builder(this)
                 .packageName(REMOTE_SERVICE_PKG)
                 .action(REMOTE_SERVICE_ACTION)
@@ -61,6 +62,8 @@ public class BindingActivity extends AppCompatActivity implements AndLinker.Bind
     @Override
     public void onUnBind() {
         Log.d(TAG, "AndLinker onUnBind()");
+        mRemoteService = null;
+        mRemoteTask = null;
     }
 
     @OnClick({R.id.btn_pid, R.id.btn_basic_types, R.id.btn_call_adapter, R.id.btn_rxjava2_call_adapter,
@@ -127,9 +130,9 @@ public class BindingActivity extends AppCompatActivity implements AndLinker.Bind
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mLinker.setBindCallback(null);
         mLinker.unRegisterObject(mRemoteCallback);
         mLinker.unbind();
+        mLinker.setBindCallback(null);
     }
 
     private final IRemoteCallback mRemoteCallback = new IRemoteCallback() {
