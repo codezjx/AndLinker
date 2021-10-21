@@ -80,6 +80,10 @@ public final class AndLinker {
      * Connect to the remote service.
      */
     public void bind() {
+        if (isBind()) {
+            Logger.d(TAG, "Already bind, just return.");
+            return;
+        }
         Intent intent = new Intent();
         if (!Utils.isStringBlank(mAction)) {
             intent.setAction(mAction);
@@ -95,7 +99,12 @@ public final class AndLinker {
      * Disconnect from the remote service.
      */
     public void unbind() {
+        if (!isBind()) {
+            Logger.d(TAG, "Already unbind, just return.");
+            return;
+        }
         mContext.unbindService(mServiceConnection);
+        handleUnBind();
     }
 
     /**
@@ -144,6 +153,7 @@ public final class AndLinker {
         return new ServiceConnection() {
             @Override
             public void onServiceConnected(ComponentName name, IBinder service) {
+                Logger.d(TAG, "onServiceConnected:" + name + " service:" + service);
                 mTransferService = ITransfer.Stub.asInterface(service);
                 fireOnBind();
                 try {
@@ -155,20 +165,25 @@ public final class AndLinker {
 
             @Override
             public void onServiceDisconnected(ComponentName name) {
-                if (mTransferService == null) {
-                    Logger.e(TAG, "Error occur, TransferService was null when service disconnected.");
-                    fireOnUnBind();
-                    return;
-                }
-                try {
-                    mTransferService.unRegister(mCallback);
-                } catch (RemoteException e) {
-                    e.printStackTrace();
-                }
-                mTransferService = null;
-                fireOnUnBind();
+                Logger.d(TAG, "onServiceDisconnected:" + name);
+                handleUnBind();
             }
         };
+    }
+    
+    private void handleUnBind() {
+        if (mTransferService == null) {
+            Logger.e(TAG, "Error occur, TransferService was null when service disconnected.");
+            fireOnUnBind();
+            return;
+        }
+        try {
+            mTransferService.unRegister(mCallback);
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        mTransferService = null;
+        fireOnUnBind();
     }
 
     private void fireOnBind() {
