@@ -1,17 +1,13 @@
 ext {
-    bintrayRepo = 'maven'
-    bintrayName = 'and-linker'
-
     publishedGroupId = 'com.codezjx.library'
-    libraryName = 'AndLinker'
     artifact = 'andlinker'
-
+    libraryVersion = '0.8.0'
+    
+    libraryName = 'AndLinker'
     libraryDescription = 'AndLinker is a IPC library for Android, which combines the features of AIDL and Retrofit. Allows IPC call seamlessly compose with rxjava and rxjava2 call adapters.'
 
     siteUrl = 'https://github.com/codezjx/AndLinker'
     gitUrl = 'https://github.com/codezjx/AndLinker.git'
-
-    libraryVersion = '0.7.2'
 
     developerId = 'codezjx'
     developerName = 'codezjx'

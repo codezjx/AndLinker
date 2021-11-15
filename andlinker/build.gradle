@@ -25,5 +25,4 @@ dependencies {
 }
 
 apply from: 'properties.gradle'
-apply from: 'install.gradle'
-apply from: 'bintray.gradle'
+apply from: 'maven-publish.gradle'
