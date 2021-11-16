@@ -5,11 +5,11 @@ AndLinker是一款Android上的IPC (进程间通信) 库，结合了[AIDL][aidl]
 
 ## 配置
 
-在项目根目录的`build.gradle`中添加`jcenter()`仓库
+在项目根目录的`build.gradle`中添加`mavenCentral()`仓库
 ```groovy
 allprojects {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 }
 ```
@@ -17,7 +17,7 @@ allprojects {
 在App的`build.gradle`中添加如下依赖
 ```groovy
 dependencies {
-    implementation 'com.codezjx.library:andlinker:0.7.2'
+    implementation 'com.codezjx.library:andlinker:0.8.0'
 }
 ```
 

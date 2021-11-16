@@ -1,6 +1,6 @@
 
 [![Build Status](https://travis-ci.org/codezjx/AndLinker.svg?branch=master)](https://travis-ci.org/codezjx/AndLinker)
-[![JCenter](https://api.bintray.com/packages/codezjx/maven/and-linker/images/download.svg)](https://bintray.com/codezjx/maven/and-linker/_latestVersion)
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.codezjx.library/andlinker/badge.svg)](https://maven-badges.herokuapp.com/maven-central/com.codezjx.library/andlinker)
 [![License](https://img.shields.io/badge/License-Apache%20License%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 
 # AndLinker
@@ -13,11 +13,11 @@ AndLinker is a IPC(Inter-Process Communication) library for Android, which combi
 
 ## Setup
 
-Add the `jcenter()` repository in your root `build.gradle`.
+Add the `mavenCentral()` repository in your root `build.gradle`.
 ```groovy
 allprojects {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 }
 ```
@@ -25,7 +25,7 @@ allprojects {
 Add the dependencies in your app level `build.gradle`.
 ```groovy
 dependencies {
-    implementation 'com.codezjx.library:andlinker:0.7.2'
+    implementation 'com.codezjx.library:andlinker:0.8.0'
 }
 ```
 
