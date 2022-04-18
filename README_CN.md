@@ -17,7 +17,7 @@ allprojects {
 在App的`build.gradle`中添加如下依赖
 ```groovy
 dependencies {
-    implementation 'com.codezjx.library:andlinker:0.8.0'
+    implementation 'com.codezjx.library:andlinker:0.8.1'
 }
 ```
 

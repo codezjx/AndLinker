@@ -1,7 +1,7 @@
 ext {
     publishedGroupId = 'com.codezjx.library'
     artifact = 'andlinker'
-    libraryVersion = '0.8.0'
+    libraryVersion = '0.8.1'
     
     libraryName = 'AndLinker'
     libraryDescription = 'AndLinker is a IPC library for Android, which combines the features of AIDL and Retrofit. Allows IPC call seamlessly compose with rxjava and rxjava2 call adapters.'
