@@ -104,7 +104,7 @@ public final class AndLinker {
             return;
         }
         mContext.unbindService(mServiceConnection);
-        handleUnBind();
+        handleUnBind(true);
     }
 
     /**
@@ -166,21 +166,24 @@ public final class AndLinker {
             @Override
             public void onServiceDisconnected(ComponentName name) {
                 Logger.d(TAG, "onServiceDisconnected:" + name);
-                handleUnBind();
+                handleUnBind(false);
             }
         };
     }
     
-    private void handleUnBind() {
+    private void handleUnBind(boolean unRegister) {
+        Logger.d(TAG, "handleUnBind:" + unRegister);
         if (mTransferService == null) {
             Logger.e(TAG, "Error occur, TransferService was null when service disconnected.");
             fireOnUnBind();
             return;
         }
-        try {
-            mTransferService.unRegister(mCallback);
-        } catch (RemoteException e) {
-            e.printStackTrace();
+        if (unRegister) {
+            try {
+                mTransferService.unRegister(mCallback);
+            } catch (RemoteException e) {
+                e.printStackTrace();
+            }
         }
         mTransferService = null;
         fireOnUnBind();
