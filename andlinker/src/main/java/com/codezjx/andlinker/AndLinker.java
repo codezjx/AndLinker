@@ -155,12 +155,12 @@ public final class AndLinker {
             public void onServiceConnected(ComponentName name, IBinder service) {
                 Logger.d(TAG, "onServiceConnected:" + name + " service:" + service);
                 mTransferService = ITransfer.Stub.asInterface(service);
-                fireOnBind();
                 try {
                     mTransferService.register(mCallback);
                 } catch (RemoteException e) {
                     e.printStackTrace();
                 }
+                fireOnBind();
             }
 
             @Override
